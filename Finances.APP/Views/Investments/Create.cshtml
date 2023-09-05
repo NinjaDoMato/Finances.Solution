@@ -1,7 +1,17 @@
-﻿@model Finances.Database.Entities.Investment
+﻿@using Finances.APP.Models.Investment;
+@model InvestmentCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
+}
+
+@section Notification {
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @ViewBag.ErrorMessage
+        </div>
+    }
 }
 
 <h1>Create</h1>
@@ -16,11 +26,6 @@
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartAmount" class="control-label"></label>
-                <input asp-for="StartAmount" class="form-control" />
-                <span asp-validation-for="StartAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Rentability" class="control-label"></label>
@@ -46,6 +51,46 @@
                 </select>
                 <span asp-validation-for="Account" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label class="control-label">Select Reserves</label>
+                <select asp-items="ViewBag.AllReserves" class="form-control" id="selectedReserve">
+                    <option value="">-- Select a Reserve --</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="addReserve">Add Reserve</button>
+
+            <!-- Table to display added reserves -->
+            <table class="table table-bordered" id="selectedReservesTable">
+                <thead>
+                    <tr>
+                        <th>Reserve</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.SelectedReserves.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input type="hidden" asp-for="SelectedReserves[i].ReserveId" />
+                                @Html.DisplayFor(model => model.SelectedReserves[i].ReserveId)
+                            </td>
+                            <td>
+                                <input type="text" asp-for="SelectedReserves[i].Amount" class="form-control" />
+                                <span asp-validation-for="SelectedReserves[i].Amount" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger removeReserve">Remove</button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -58,6 +103,35 @@
 </div>
 
 @section Scripts {
+    <script>
+        $(document).ready(function () {
+            var reserveIndex = @Model.SelectedReserves.Count;
+
+            $("#addReserve").click(function () {
+                var selectedReserveId = $("#selectedReserve").val();
+                if (selectedReserveId !== "") {
+                    // Add the selected reserve to the table with indexed names
+                    var newRow = '<tr>' +
+                        '<td><input type="hidden" name="SelectedReserves[' + reserveIndex + '].ReserveId" value="' + selectedReserveId + '" />' +
+                        $("#selectedReserve option:selected").text() + '</td>' +
+                        '<td><input type="text" name="SelectedReserves[' + reserveIndex + '].Amount" class="form-control" /></td>' +
+                        '<td><button type="button" class="btn btn-danger removeReserve">Remove</button></td>' +
+                        '</tr>';
+                    $("#selectedReservesTable tbody").append(newRow);
+
+                    // Clear the selected reserve
+                    $("#selectedReserve").val("");
+
+                    reserveIndex++; // Increment the index for the next reserve
+                }
+            });
+
+            // Handle removing a selected reserve
+            $("#selectedReservesTable").on("click", ".removeReserve", function () {
+                $(this).closest("tr").remove();
+            });
+        });
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

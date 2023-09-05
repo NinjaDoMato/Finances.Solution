@@ -1,15 +1,30 @@
-﻿namespace Finances.APP.Models.Investment
+﻿using Finances.Database.Enums;
+using System.ComponentModel;
+
+namespace Finances.APP.Models.Investment
 {
-    public class CreateInvestmentViewModel
+    public class InvestmentCreateViewModel
     {
-        public Database.Entities.Investment Investment { get; set; } = new();
-        public List<Database.Entities.Reserve> Reserves { get; set; } = new();
-        public List<ReserveAmount> ReserveMaps { get; set; } = new();
+        // Investment properties
+        [DisplayName("Nome")]
+        public string Name { get; set; } = string.Empty;
+
+        [DisplayName("Rentabilidade")]
+        public decimal Rentability { get; set; }
+
+        [DisplayName("Tipo")]
+        public InvestmentType Type { get; set; }
+
+        [DisplayName("Conta")]
+        public AccountType Account { get; set; }
+
+        // Collection to store selected Reserve IDs and their corresponding amounts
+        public List<ReserveAmountViewModel> SelectedReserves { get; set; } = new List<ReserveAmountViewModel>();
     }
 
-    public class ReserveAmount
+    public class ReserveAmountViewModel
     {
-        public decimal Amount { get; set;}
         public Guid ReserveId { get; set; }
+        public decimal Amount { get; set; }
     }
 }
