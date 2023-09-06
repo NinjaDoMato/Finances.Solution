@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Finances.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230903232130_Start_Database")]
-    partial class Start_Database
+    [Migration("20230905205002_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,6 +99,9 @@ namespace Finances.Database.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<decimal>("Goal")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<DateTime?>("LastUpdate")
                         .HasColumnType("datetime(6)");

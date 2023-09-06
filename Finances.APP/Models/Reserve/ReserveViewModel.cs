@@ -22,6 +22,9 @@ namespace Finances.APP.Models.Reserve
         [DisplayName("Valor investido")]
         public decimal InvestedAmount { get; set; }
 
+        [DisplayName("Objetivo")]
+        public decimal Goal { get; set; }
+
         [DisplayName("Proprietário")]
         public ReserveOwner Owner{ get; set; }
 

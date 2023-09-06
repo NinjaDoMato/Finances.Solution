@@ -1,29 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.IO;
 
-namespace Finances.Database.Context
+namespace Finances.Database.Context;
+
+public class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
 {
-    public class DatabaseContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
+    public DatabaseContext CreateDbContext(string[] args)
     {
-        public DatabaseContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
-            var connString = "server=localhost;database=finances;user=root;password=!root";
+        string projectPath = AppDomain.CurrentDomain.BaseDirectory.Split(new String[] { @"bin\" }, StringSplitOptions.None)[0];
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(projectPath)
+            .AddJsonFile("appsettings.Development.json")
+            .Build();
 
-            if (args != null && args.Length > 0)
-            {
-                connString = args[0];
-            }
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            optionsBuilder.UseMySql(connString, ServerVersion.AutoDetect(connString));
+        var builder = new DbContextOptionsBuilder<DatabaseContext>();
+        builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 
-            return new DatabaseContext(optionsBuilder.Options);
-        }
+        return new DatabaseContext(builder.Options);
     }
 }

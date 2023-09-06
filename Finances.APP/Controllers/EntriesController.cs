@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Finances.Database.Context;
 using Finances.Database.Entities;
+using NuGet.Packaging;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Finances.APP.Controllers
 {
@@ -48,7 +50,8 @@ namespace Finances.APP.Controllers
         // GET: Entries/Create
         public IActionResult Create()
         {
-            ViewData["ReserveId"] = new SelectList(_context.Reserves, "Id", "Description");
+            PopulateSelectList();
+
             return View();
         }
 
@@ -59,6 +62,8 @@ namespace Finances.APP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Amount,ReserveId,Id,Observation,DateCreated,LastUpdate")] Entry entry)
         {
+            entry.Observation ??= string.Empty;
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
                 entry.Id = Guid.NewGuid();
@@ -126,7 +131,7 @@ namespace Finances.APP.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ReserveId"] = new SelectList(_context.Reserves, "Id", "Description", entry.ReserveId);
+            PopulateSelectList();
             return View(entry);
         }
 
@@ -163,14 +168,24 @@ namespace Finances.APP.Controllers
             {
                 _context.Entries.Remove(entry);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EntryExists(Guid id)
         {
-          return (_context.Entries?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Entries?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private void PopulateSelectList()
+        {
+            var reserves = _context.Reserves.OrderBy(r => r.Name);
+
+            Dictionary<string, string> selectValules = new();
+            selectValules.AddRange(reserves.Select(r => new KeyValuePair<string, string>(r.Id.ToString(), $"{r.Name} - {r.Owner}")));
+
+            ViewData["ReserveId"] = new SelectList(selectValules, "Key", "Value");
         }
     }
 }

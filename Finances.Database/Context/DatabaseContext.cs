@@ -26,13 +26,6 @@ public class DatabaseContext : DbContext
         modelBuilder.ApplyConfiguration(new ReserveInvestmentConfiguration());
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var connString = "server=localhost;database=finances;user=root;password=!root";
-
-        optionsBuilder.UseMySql(connString, ServerVersion.AutoDetect(connString));
-    }
-
     public override int SaveChanges()
     {
         var now = DateTime.UtcNow;

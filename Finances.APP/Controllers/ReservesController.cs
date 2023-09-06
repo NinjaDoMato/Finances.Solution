@@ -40,6 +40,7 @@ namespace Finances.APP.Controllers
                     Name = r.Name,
                     Description = r.Description,
                     Owner = r.Owner,
+                    Goal = r.Goal,
                     CurrentAmount = r.Entries.Sum(e => e.Amount),
                     InvestedAmount = r.LinkedInvestments.Sum(i => i.Amount)
                 }).ToListAsync();
@@ -89,7 +90,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Owner,Id,DateCreated,LastUpdate")] Reserve reserve)
+        public async Task<IActionResult> Create([Bind("Name,Description,Owner,Goal,Id,DateCreated,LastUpdate")] Reserve reserve)
         {
             if (ModelState.IsValid)
             {

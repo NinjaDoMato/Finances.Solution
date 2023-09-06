@@ -9,8 +9,10 @@ namespace Finances.Database.Entities;
 
 public class Entry : BaseEntity
 {
+    [DisplayName("Valor")]
     public decimal Amount { get; set; }
 
+    [DisplayName("Observação")]
     public string Observation { get; set; } = string.Empty;
     public Guid ReserveId { get; set; }
 
