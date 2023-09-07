@@ -8,14 +8,14 @@
 
 <div class="row container-fluid">
     <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
+        <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Entradas
+                            Total Investido
                         </div>
-                        @*<div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Where(r => r.Amount > 0).Sum(r => r.Amount).ToString("C")</div>*@
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Where(r => r.EndDate > DateTime.Now).Sum(r => r.CurrentAmount).ToString("C")</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-solid fa-arrow-trend-down fa-2x text-gray-300"></i>
@@ -25,14 +25,14 @@
         </div>
     </div>
     <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-danger shadow h-100 py-2">
+        <div class="card border-left-success shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Saídas
+                            Total Lucro
                         </div>
-                        @*<div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Where(r => r.Amount < 0).Sum(r => r.Amount).ToString("C")</div>*@
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Where(r => r.EndDate > DateTime.Now).Sum(r => r.CurrentAmount - r.StartAmount).ToString("C")</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-solid fa-arrow-trend-up fa-2x text-gray-300"></i>
@@ -47,7 +47,7 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Lançamentos
+                            Investimentos
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
                     </div>
@@ -102,9 +102,9 @@
                                 <th>@Html.DisplayFor(modelItem => item.EndDate)</th>
 
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
                                 </td>
                             </tr>
                         }

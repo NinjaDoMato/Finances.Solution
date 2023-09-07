@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Finances.Database.Context;
 using Finances.Database.Entities;
 using Finances.APP.Models.Investment;
+using NuGet.Packaging;
+using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace Finances.APP.Controllers
 {
@@ -50,22 +52,25 @@ namespace Finances.APP.Controllers
         public IActionResult Create()
         {
             // Fetch all reserves to populate the dropdown
-            ViewBag.AllReserves = new SelectList(_context.Reserves, "Id", "Name");
+            PopulateSelectList();
 
             // Initialize the view model and add an initial entry for SelectedReserves
-            var viewModel = new InvestmentCreateViewModel();
+            var viewModel = new InvestmentCrudViewModel();
 
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(InvestmentCreateViewModel viewModel)
+        public async Task<IActionResult> Create(InvestmentCrudViewModel viewModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
+                    if (viewModel.EndDate < DateTime.Now)
+                        throw new Exception("Data de resgate não é válida.");
+
                     // Create a new Investment entity based on the view model data
                     var investment = new Investment
                     {
@@ -75,6 +80,7 @@ namespace Finances.APP.Controllers
                         Type = viewModel.Type,
                         CurrentAmount = viewModel.SelectedReserves.Sum(r => r.Amount),
                         StartAmount = viewModel.SelectedReserves.Sum(r => r.Amount),
+                        EndDate = viewModel.EndDate,
                         SourceReserves = new List<ReserveInvestment>()
                     };
 
@@ -112,7 +118,7 @@ namespace Finances.APP.Controllers
             }
 
             // If ModelState is not valid, re-populate the dropdown
-            ViewBag.AllReserves = new SelectList(_context.Reserves, "Id", "Name", viewModel.SelectedReserves);
+            PopulateSelectList();    
             return View(viewModel);
         }
 
@@ -124,12 +130,34 @@ namespace Finances.APP.Controllers
                 return NotFound();
             }
 
-            var investment = await _context.Investments.FindAsync(id);
+            var investment = await _context.Investments
+                .Include(i => i.SourceReserves)
+                .ThenInclude(s => s.Reserve)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
             if (investment == null)
             {
                 return NotFound();
             }
-            return View(investment);
+
+            PopulateSelectList();
+
+            return View(new UpdateInvestmentViewModel
+            {
+                Id = investment.Id,
+                Name = investment.Name,
+                Account = investment.Account,
+                Type = investment.Type,
+                EndDate = investment.EndDate,
+                CurrentAmount = investment.CurrentAmount,
+                Rentability = investment.Rentability,
+                SelectedReserves = investment.SourceReserves.Select(s => new UpdateReserveAmountViewModel
+                {
+                    ReserveId = s.ReserveId,
+                    ReserveName = s.Reserve.Name + " - " + s.Reserve.Owner,
+                    Amount = Math.Round(s.Amount, 2)
+                }).ToList()
+            });
         }
 
         // POST: Investments/Edit/5
@@ -137,9 +165,13 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,StartAmount,CurrentAmount,Rentability,Type,Account,Id,DateCreated,LastUpdate")] Investment investment)
+        public async Task<IActionResult> Edit(UpdateInvestmentViewModel viewModel)
         {
-            if (id != investment.Id)
+            var investment = await _context.Investments
+                .Include(i => i.SourceReserves)
+                .FirstOrDefaultAsync(i => i.Id == viewModel.Id);
+
+            if (investment == null)
             {
                 return NotFound();
             }
@@ -148,6 +180,22 @@ namespace Finances.APP.Controllers
             {
                 try
                 {
+                    investment.Name = viewModel.Name;
+                    investment.CurrentAmount= viewModel.CurrentAmount;
+                    investment.EndDate= viewModel.EndDate;
+
+                    foreach (var r in viewModel.SelectedReserves)
+                    {
+                        if(!investment.SourceReserves.Any(s => s.InvestmentId == r.ReserveId && s.Amount == r.Amount))
+                        {
+                            investment.SourceReserves.Add(new()
+                            {
+                                Amount = r.Amount,
+                                ReserveId = r.ReserveId
+                            });
+                        }
+                    }
+
                     _context.Update(investment);
                     await _context.SaveChangesAsync();
                 }
@@ -203,7 +251,7 @@ namespace Finances.APP.Controllers
             {
                 _context.ReserveInvestmentMaps.RemoveRange(investment.SourceReserves);
                 _context.Investments.Remove(investment);
-                
+
                 await _context.SaveChangesAsync();
             }
 
@@ -213,6 +261,16 @@ namespace Finances.APP.Controllers
         private bool InvestmentExists(Guid id)
         {
             return (_context.Investments?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private void PopulateSelectList()
+        {
+            var reserves = _context.Reserves.OrderBy(r => r.Name);
+
+            Dictionary<string, string> selectValules = new();
+            selectValules.AddRange(reserves.Select(r => new KeyValuePair<string, string>(r.Id.ToString(), $"{r.Name} - {r.Owner}")));
+
+            ViewBag.AllReserves = new SelectList(selectValules, "Key", "Value");
         }
     }
 }

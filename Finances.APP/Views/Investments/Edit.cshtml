@@ -1,12 +1,14 @@
-﻿@model Finances.Database.Entities.Investment
+﻿@using Finances.APP.Models.Investment;
+@model UpdateInvestmentViewModel
+
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Editar</h1>
 
-<h4>Investment</h4>
+<h4>Investmento</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -18,52 +20,119 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StartAmount" class="control-label"></label>
-                <input asp-for="StartAmount" class="form-control" />
-                <span asp-validation-for="StartAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CurrentAmount" class="control-label"></label>
-                <input asp-for="CurrentAmount" class="form-control" />
-                <span asp-validation-for="CurrentAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Rentability" class="control-label"></label>
-                <input asp-for="Rentability" class="form-control" />
+                <input asp-for="Rentability" class="form-control" disabled/>
                 <span asp-validation-for="Rentability" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="CurrentAmount" class="control-label"></label>
+                <input asp-for="CurrentAmount" class="form-control"  />
+                <span asp-validation-for="CurrentAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
-                <select asp-for="Type" class="form-control"></select>
+                <select asp-for="Type" class="form-control" disabled>
+                    <option value="0">CDB</option>
+                    <option value="1">Tesouro SELIC</option>
+                    <option value="2">FII</option>
+                </select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Account" class="control-label"></label>
-                <select asp-for="Account" class="form-control"></select>
+                <select asp-for="Account" class="form-control" disabled>
+                    <option value="0">Modal</option>
+                    <option value="1">XP</option>
+                    <option value="2">NuInvest</option>
+
+                </select>
                 <span asp-validation-for="Account" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" disabled />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
+                <label class="control-label">Reservas </label>
+                <div class="d-flex">
+                    <select asp-items="ViewBag.AllReserves" class="form-control" id="selectedReserve">
+                        <option value="">-- Seleciome uma reserva --</option>
+                    </select>
+                    <button type="button" class="btn btn-primary ml-2" id="addReserve">Adicionar</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="LastUpdate" class="control-label"></label>
-                <input asp-for="LastUpdate" class="form-control" disabled/>
-                <span asp-validation-for="LastUpdate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+
+            <!-- Table to display added reserves -->
+            <table class="table table-bordered mt-2" id="selectedReservesTable">
+                <thead>
+                    <tr>
+                        <th>Reserva</th>
+                        <th>Valor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.SelectedReserves.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input type="hidden" asp-for="SelectedReserves[i].ReserveId" />
+                                @Html.DisplayFor(model => model.SelectedReserves[i].ReserveName)
+                            </td>
+                            <td>
+                                <input type="text" asp-for="SelectedReserves[i].Amount" class="form-control" />
+                                <span asp-validation-for="SelectedReserves[i].Amount" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger removeReserve">Remover</button>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="form-group d-flex">
+                <a class="btn btn-secondary mr-2" asp-action="Index">Cancelar</a>
+                <input type="submit" value="Atualizar Investimento" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
+<script src="vendor/jquery/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var reserveIndex = @Model.SelectedReserves.Count;
+
+            $("#addReserve").click(function () {
+                var selectedReserveId = $("#selectedReserve").val();
+                if (selectedReserveId !== "") {
+                    // Add the selected reserve to the table with indexed names
+                    var newRow = '<tr>' +
+                        '<td><input type="hidden" name="SelectedReserves[' + reserveIndex + '].ReserveId" value="' + selectedReserveId + '" />' +
+                        $("#selectedReserve option:selected").text() + '</td>' +
+                        '<td><input type="text" name="SelectedReserves[' + reserveIndex + '].Amount" class="form-control" /></td>' +
+                        '<td><button type="button" class="btn btn-danger removeReserve">Remove</button></td>' +
+                        '</tr>';
+                    $("#selectedReservesTable tbody").append(newRow);
+
+                    // Clear the selected reserve
+                    $("#selectedReserve").val("");
+
+                    reserveIndex++; // Increment the index for the next reserve
+                }
+            });
+
+            // Handle removing a selected reserve
+            $("#selectedReservesTable").on("click", ".removeReserve", function () {
+                $(this).closest("tr").remove();
+            });
+        });
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

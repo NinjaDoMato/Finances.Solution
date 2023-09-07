@@ -1,5 +1,5 @@
 ﻿@using Finances.APP.Models.Investment;
-@model InvestmentCreateViewModel
+@model InvestmentCrudViewModel
 
 @{
     Layout = "_Layout";
@@ -15,9 +15,9 @@
     }
 }
 
-<h1>Create</h1>
+<h1>Criar</h1>
 
-<h4>Investment</h4>
+<h4>Investimento</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -43,6 +43,11 @@
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Account" class="control-label"></label>
                 <select asp-for="Account" class="form-control">
                     <option value="0">Modal</option>
@@ -54,21 +59,23 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label">Select Reserves</label>
-                <select asp-items="ViewBag.AllReserves" class="form-control" id="selectedReserve">
-                    <option value="">-- Select a Reserve --</option>
-                </select>
+                <label class="control-label">Reservas </label>
+                <div class="d-flex">
+                    <select asp-items="ViewBag.AllReserves" class="form-control" id="selectedReserve">
+                        <option value="">-- Seleciome uma reserva --</option>
+                    </select>
+                    <button type="button" class="btn btn-primary ml-2" id="addReserve">Adicionar</button>
+                </div>
             </div>
 
-            <button type="button" class="btn btn-primary" id="addReserve">Add Reserve</button>
 
             <!-- Table to display added reserves -->
-            <table class="table table-bordered" id="selectedReservesTable">
+            <table class="table table-bordered mt-2" id="selectedReservesTable">
                 <thead>
                     <tr>
-                        <th>Reserve</th>
-                        <th>Amount</th>
-                        <th>Action</th>
+                        <th>Reserva</th>
+                        <th>Valor</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,7 +91,7 @@
                                 <span asp-validation-for="SelectedReserves[i].Amount" class="text-danger"></span>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-danger removeReserve">Remove</button>
+                                <button type="button" class="btn btn-danger removeReserve">Remover</button>
                             </td>
                         </tr>
                     }
@@ -92,18 +99,16 @@
                 </tbody>
             </table>
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="form-group d-flex">
+                <a class="btn btn-secondary mr-2" asp-action="Index">Cancelar</a>
+                <input type="submit" value="Criar Investimento" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
+    <script src="vendor/jquery/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
             var reserveIndex = @Model.SelectedReserves.Count;

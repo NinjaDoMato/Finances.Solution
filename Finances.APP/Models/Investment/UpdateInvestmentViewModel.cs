@@ -1,10 +1,13 @@
 ﻿using Finances.Database.Enums;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Finances.APP.Models.Investment
 {
-    public class InvestmentCrudViewModel
+    public class UpdateInvestmentViewModel
     {
+        public Guid Id { get; set; }
+
         // Investment properties
         [DisplayName("Nome")]
         public string Name { get; set; } = string.Empty;
@@ -25,12 +28,13 @@ namespace Finances.APP.Models.Investment
         public AccountType Account { get; set; }
 
         // Collection to store selected Reserve IDs and their corresponding amounts
-        public List<ReserveAmountViewModel> SelectedReserves { get; set; } = new List<ReserveAmountViewModel>();
+        public List<UpdateReserveAmountViewModel> SelectedReserves { get; set; } = new ();
     }
 
-    public class ReserveAmountViewModel
+    public class UpdateReserveAmountViewModel
     {
         public Guid ReserveId { get; set; }
+        public string ReserveName { get; set; } = string.Empty;
         public decimal Amount { get; set; }
     }
 }

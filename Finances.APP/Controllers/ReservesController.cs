@@ -25,12 +25,14 @@ namespace Finances.APP.Controllers
         // GET: Reserves
         public async Task<IActionResult> Index()
         {
-            var reserves = _context.Reserves;
+            var reserves = _context.Reserves
+                .Include(r => r.LinkedInvestments)
+                .Include(r => r.Entries);
 
             if (reserves == null)
                 return Problem("Entity set 'DatabaseContext.Reserves'  is null.");
 
-            var reserveList = await _context.Reserves
+            var reserveList = await reserves
                 .Include(r => r.Entries)
                 .Include(r => r.LinkedInvestments)
                     .ThenInclude(l => l.Investment)

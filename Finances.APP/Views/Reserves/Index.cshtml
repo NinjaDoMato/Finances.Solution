@@ -8,41 +8,41 @@
 <h1>Reservas</h1>
 
 <div class="row container-fluid">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Acumulado
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Sum(r => r.CurrentAmount).ToString("C")</div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Acumulado
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Sum(r => r.CurrentAmount).ToString("C")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Investido
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Sum(r => r.InvestedAmount).ToString("C")</div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Investido
                         </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Sum(r => r.InvestedAmount).ToString("C")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
 <div class="container-fluid">
@@ -82,9 +82,9 @@
                                 <td>@Html.DisplayFor(modelItem => item.InvestedAmount)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Goal)</td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
                                 </td>
                             </tr>
                         }
