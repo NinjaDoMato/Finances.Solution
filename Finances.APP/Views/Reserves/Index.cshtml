@@ -12,15 +12,135 @@
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Acumulado
+                    @{
+                        var currentD = Model
+                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Daniel)
+                        .Sum(r => r.CurrentAmount);
+
+                        var investedD = Model
+                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Daniel)
+                        .Sum(r => r.InvestedAmount);
+
+                        var percentD = Math.Round(investedD / currentD * 100, 2);
+
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Mi Moço
+                            </div>
+                            <div class="d-flex">
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" title="Investido: @investedD.ToString("C")">
+                                    @currentD.ToString("C")
+                                    <i class="fas fa-info-circle fa-xs"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Sum(r => r.CurrentAmount).ToString("C")</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                    </div>
+                        <div class="row no-gutters align-items-center d-flex mt-1">
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+
+
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                         style="width: @percentD%" aria-valuenow="50" aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="mb-0 mr-3 font-weight-bold text-gray-800">@percentD%</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    @{
+                        var currentC = Model
+                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Cassia)
+                        .Sum(r => r.CurrentAmount);
+
+                        var investedC = Model
+                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Cassia)
+                        .Sum(r => r.InvestedAmount);
+
+                        var percentC = Math.Round(investedC / currentC * 100, 2);
+
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Mi Moça
+                            </div>
+                            <div class="d-flex">
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" title="Investido: @investedC.ToString("C")">
+                                    @currentC.ToString("C")
+                                    <i class="fas fa-info-circle fa-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row no-gutters align-items-center d-flex mt-1">
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+
+
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                         style="width: @percentC%" aria-valuenow="50" aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="mb-0 mr-3 font-weight-bold text-gray-800">@percentC%</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    @{
+                        var currentDD = Model
+                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Commmon)
+                        .Sum(r => r.CurrentAmount);
+
+                        var investedDD = Model
+                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Commmon)
+                        .Sum(r => r.InvestedAmount);
+
+                        var percentDD = Math.Round(investedDD / currentDD * 100, 2);
+
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total dos Doise
+                            </div>
+                            <div class="d-flex">
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" title="Investido: @investedDD.ToString("C")">
+                                    @currentDD.ToString("C")
+                                    <i class="fas fa-info-circle fa-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row no-gutters align-items-center d-flex mt-1">
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+
+
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                         style="width: @percentDD%" aria-valuenow="50" aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="mb-0 mr-3 font-weight-bold text-gray-800">@percentDD%</div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -30,15 +150,41 @@
         <div class="card border-left-success shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Investido
+                    @{
+                        var current = Model
+                        .Sum(r => r.CurrentAmount);
+
+                        var invested = Model
+                        .Sum(r => r.InvestedAmount);
+
+                        var percent = Math.Round(invested / current * 100, 2);
+
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Acumulado
+                            </div>
+                            <div class="d-flex">
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" title="Investido: @invested.ToString("C")">
+                                    @current.ToString("C")
+                                    <i class="fas fa-info-circle fa-xs"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Sum(r => r.InvestedAmount).ToString("C")</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                    </div>
+                        <div class="row no-gutters align-items-center d-flex mt-1">
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+
+
+                                    <div class="progress-bar bg-info" role="progressbar"
+                                         style="width: @percent%" aria-valuenow="50" aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="mb-0 mr-3 font-weight-bold text-gray-800">@percent%</div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
