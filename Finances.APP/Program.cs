@@ -1,4 +1,5 @@
 using Finances.APP.Configuration;
+using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,15 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
+var supportedCultures = new[] { new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+
 
 app.MapControllerRoute(
     name: "default",

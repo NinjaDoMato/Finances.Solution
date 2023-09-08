@@ -21,12 +21,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Rentability" class="control-label"></label>
-                <input asp-for="Rentability" class="form-control" disabled/>
+                <input asp-for="Rentability" class="form-control" disabled />
                 <span asp-validation-for="Rentability" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CurrentAmount" class="control-label"></label>
-                <input asp-for="CurrentAmount" class="form-control"  />
+                <input asp-for="CurrentAmount" class="form-control" />
                 <span asp-validation-for="CurrentAmount" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,12 +55,16 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label">Reservas </label>
+                <label class="control-label">Adicionar Reservas </label>
                 <div class="d-flex">
                     <select asp-items="ViewBag.AllReserves" class="form-control" id="selectedReserve">
                         <option value="">-- Seleciome uma reserva --</option>
                     </select>
-                    <button type="button" class="btn btn-primary ml-2" id="addReserve">Adicionar</button>
+
+                    <input type="text" class="form-control ml-2" id="reserveAmount" value="0.00" />
+                    <span class="text-danger"></span>
+
+                    <button type="button" class="btn btn-primary ml-2" id="addReserve" disabled>Adicionar</button>
                 </div>
             </div>
 
@@ -83,8 +87,7 @@
                                 @Html.DisplayFor(model => model.SelectedReserves[i].ReserveName)
                             </td>
                             <td>
-                                <input type="text" asp-for="SelectedReserves[i].Amount" class="form-control" />
-                                <span asp-validation-for="SelectedReserves[i].Amount" class="text-danger"></span>
+                                @Html.DisplayFor(model => model.SelectedReserves[i].Amount)
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger removeReserve">Remover</button>
@@ -95,44 +98,90 @@
                 </tbody>
             </table>
 
+            <!-- Hidden input for tracking removed items -->
+            <input type="hidden" id="removedReserves" name="RemovedReserves" value="" />
+
             <div class="form-group d-flex">
-                <a class="btn btn-secondary mr-2" asp-action="Index">Cancelar</a>
+                <a class="btn btn-secondary mr-2" asp-action="Index">Voltar</a>
                 <input type="submit" value="Atualizar Investimento" class="btn btn-primary" />
             </div>
+
         </form>
     </div>
 </div>
 
 @section Scripts {
-<script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/jquery/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
-            var reserveIndex = @Model.SelectedReserves.Count;
 
+            // Enable the "Adicionar" button when a reserve is selected
+            $("#selectedReserve").change(function () {
+                var selectedValue = $(this).val();
+                if (selectedValue !== "") {
+                    $("#addReserve").prop("disabled", false);
+                } else {
+                    $("#addReserve").prop("disabled", true);
+                }
+            });
+
+            // Handle adding a selected reserve
             $("#addReserve").click(function () {
                 var selectedReserveId = $("#selectedReserve").val();
+                var reserveAmount = $("#reserveAmount").val();
+                var investmentId = "@Model.Id.ToString()";
+
+                console.log(selectedReserveId);
+                console.log(reserveAmount);
+                console.log(investmentId);
+
                 if (selectedReserveId !== "") {
-                    // Add the selected reserve to the table with indexed names
-                    var newRow = '<tr>' +
-                        '<td><input type="hidden" name="SelectedReserves[' + reserveIndex + '].ReserveId" value="' + selectedReserveId + '" />' +
-                        $("#selectedReserve option:selected").text() + '</td>' +
-                        '<td><input type="text" name="SelectedReserves[' + reserveIndex + '].Amount" class="form-control" /></td>' +
-                        '<td><button type="button" class="btn btn-danger removeReserve">Remove</button></td>' +
-                        '</tr>';
-                    $("#selectedReservesTable tbody").append(newRow);
-
-                    // Clear the selected reserve
-                    $("#selectedReserve").val("");
-
-                    reserveIndex++; // Increment the index for the next reserve
+                    $.ajax({
+                        url: "/Investments/AddReserve", // Replace with the correct URL
+                        method: "POST",
+                        data: {
+                            InvestmentId: investmentId,
+                            ReserveId: selectedReserveId,
+                            Amount: reserveAmount
+                        },
+                        success: function () {
+                            // Reload the page after adding the reserve
+                            location.reload();
+                        },
+                        error: function () {
+                            // Handle the error if needed
+                        }
+                    });
                 }
             });
 
             // Handle removing a selected reserve
             $("#selectedReservesTable").on("click", ".removeReserve", function () {
-                $(this).closest("tr").remove();
+                var row = $(this).closest("tr");
+                var reserveIdInput = row.find("input[name^='SelectedReserves'][name$='.ReserveId']");
+                var reserveId = reserveIdInput.val();
+
+                if (reserveId) {
+                    $.ajax({
+                        url: "/Investments/RemoveReserve", // Replace with the correct URL
+                        method: "POST",
+                        data: {
+                            InvestmentId: "@Model.Id",
+                            ReserveId: reserveId
+                        },
+                        success: function () {
+                            // Remove the row from the table
+                            row.remove();
+                        },
+                        error: function () {
+                            // Handle the error if needed
+                        }
+                    });
+                }
             });
         });
     </script>
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

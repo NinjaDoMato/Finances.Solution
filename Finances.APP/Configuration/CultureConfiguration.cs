@@ -9,9 +9,9 @@ namespace Finances.APP.Configuration
         {
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                options.DefaultRequestCulture = new RequestCulture("pt-BR");
-                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR") };
-                options.SupportedUICultures = new List<CultureInfo> { new CultureInfo("pt-BR") };
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("en-US") };
+                options.SupportedUICultures = new List<CultureInfo> { new CultureInfo("en-US") };
             });
 
             return services;

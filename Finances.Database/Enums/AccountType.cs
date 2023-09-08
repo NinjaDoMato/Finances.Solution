@@ -10,5 +10,6 @@ public enum AccountType
 {
     Modal,
     XP,
-    NuInvest
+    NuInvest,
+    Bradesco,
 }

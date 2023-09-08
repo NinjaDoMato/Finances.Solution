@@ -118,7 +118,7 @@ namespace Finances.APP.Controllers
             }
 
             // If ModelState is not valid, re-populate the dropdown
-            PopulateSelectList();    
+            PopulateSelectList();
             return View(viewModel);
         }
 
@@ -181,20 +181,11 @@ namespace Finances.APP.Controllers
                 try
                 {
                     investment.Name = viewModel.Name;
-                    investment.CurrentAmount= viewModel.CurrentAmount;
-                    investment.EndDate= viewModel.EndDate;
+                    investment.CurrentAmount = viewModel.CurrentAmount;
+                    investment.EndDate = viewModel.EndDate;
 
-                    foreach (var r in viewModel.SelectedReserves)
-                    {
-                        if(!investment.SourceReserves.Any(s => s.InvestmentId == r.ReserveId && s.Amount == r.Amount))
-                        {
-                            investment.SourceReserves.Add(new()
-                            {
-                                Amount = r.Amount,
-                                ReserveId = r.ReserveId
-                            });
-                        }
-                    }
+                    if (investment.CurrentAmount < investment.StartAmount)
+                        investment.CurrentAmount = investment.StartAmount;
 
                     _context.Update(investment);
                     await _context.SaveChangesAsync();
@@ -212,7 +203,7 @@ namespace Finances.APP.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(investment);
+            return View(viewModel);
         }
 
         // GET: Investments/Delete/5
@@ -257,6 +248,71 @@ namespace Finances.APP.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddReserve(Guid investmentId, Guid reserveId, decimal amount)
+        {
+            if (amount < 0)
+                return Json(new { success = false, message = "Valor não pode ser menor que zero." });
+
+            var reserve = _context.Reserves
+                .Include(r => r.Entries)
+                .Include(r => r.LinkedInvestments)
+                .FirstOrDefault(r => r.Id == reserveId);
+
+            var investment = _context.Investments
+                .Include(r => r.SourceReserves)
+                .FirstOrDefault(r => r.Id == investmentId);
+
+            if (investment == null)
+                return Json(new { success = false, message = "Investimento não encontrado." });
+
+            if (reserve == null)
+                return Json(new { success = false, message = "Reserva não encontrada." });
+
+            var available = reserve.Entries.Sum(r => r.Amount) - reserve.LinkedInvestments.Sum(r => r.Amount);
+
+            if (available < amount)
+                throw new Exception("Saldo disponível insuficiente.");
+
+            investment.SourceReserves.Add(new()
+            {
+                Amount = amount,
+                Reserve = reserve
+            });
+
+            investment.StartAmount = investment.SourceReserves.Sum(r => r.Amount);
+
+            if (investment.CurrentAmount < investment.StartAmount)
+                investment.CurrentAmount = investment.StartAmount;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true }); // Return a success response
+        }
+
+        [HttpPost]
+        public IActionResult RemoveReserve(Guid investmentId, Guid reserveId)
+        {
+            var investment = _context.Investments
+                .Include(i => i.SourceReserves)
+                .FirstOrDefault(i => i.Id == investmentId);
+            
+            if (investment == null)
+                return Json(new { success = false, message = "Investimento não encontrado." });
+
+            var linkToRemove = investment.SourceReserves.FirstOrDefault(s => s.ReserveId == reserveId);
+
+            if (linkToRemove != null)
+            {
+                investment.SourceReserves.Remove(linkToRemove);
+                investment.StartAmount = investment.SourceReserves.Sum(r => r.Amount);
+                _context.SaveChanges();
+            }
+
+            return Json(new { success = true }); // Return a success response
+        }
+
 
         private bool InvestmentExists(Guid id)
         {
