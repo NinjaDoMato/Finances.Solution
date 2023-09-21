@@ -1,11 +1,6 @@
 ﻿using Finances.Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Finances.Database.Repository
 {
@@ -37,7 +32,7 @@ namespace Finances.Database.Repository
 
             return query.First();
         }
-        public async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>> ? expression = null, List<string>? includeProperties = null)
+        public async Task<TEntity> FirstAsync(Expression<Func<TEntity, bool>>? expression = null, List<string>? includeProperties = null)
         {
             var query = ApplyExpression(expression, includeProperties);
 

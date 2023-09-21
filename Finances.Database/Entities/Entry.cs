@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace Finances.Database.Entities;
 
+/// <summary>
+/// Representation of the amount added or subtracted from the Reserve.
+/// </summary>
 public class Entry : BaseEntity
 {
     [DisplayName("Valor")]

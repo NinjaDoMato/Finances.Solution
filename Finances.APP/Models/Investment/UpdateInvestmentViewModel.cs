@@ -1,6 +1,5 @@
 ﻿using Finances.Database.Enums;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace Finances.APP.Models.Investment
 {
@@ -14,7 +13,7 @@ namespace Finances.APP.Models.Investment
 
         [DisplayName("Rentabilidade")]
         public decimal Rentability { get; set; }
-        
+
         [DisplayName("Valor Atual")]
         public decimal CurrentAmount { get; set; }
 
@@ -28,7 +27,7 @@ namespace Finances.APP.Models.Investment
         public AccountType Account { get; set; }
 
         // Collection to store selected Reserve IDs and their corresponding amounts
-        public List<UpdateReserveAmountViewModel> SelectedReserves { get; set; } = new ();
+        public List<UpdateReserveAmountViewModel> SelectedReserves { get; set; } = new();
     }
 
     public class UpdateReserveAmountViewModel

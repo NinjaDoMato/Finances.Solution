@@ -11,7 +11,7 @@ namespace Finances.APP.Models.Investment
 
         [DisplayName("Rentabilidade")]
         public decimal Rentability { get; set; }
-        
+
         [DisplayName("Valor Atual")]
         public decimal CurrentAmount { get; set; }
 

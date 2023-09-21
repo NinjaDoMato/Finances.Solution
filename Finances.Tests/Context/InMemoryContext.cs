@@ -1,11 +1,6 @@
 ﻿using Finances.Database.Context;
 using Finances.Tests.Fakers;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Finances.Tests.Context;
 
@@ -33,11 +28,11 @@ public class InMemoryContext : IDisposable
 
         List<Investment> investments = investmentFaker.faker.Generate(10);
 
-        foreach(var investment in investments)
+        foreach (var investment in investments)
         {
             investment.SourceReserves.Add(new()
             {
-                Investment= investment,
+                Investment = investment,
                 Reserve = reserveFaker.faker.Generate(1).First(),
             });
         }
@@ -45,7 +40,7 @@ public class InMemoryContext : IDisposable
         //Context.Entries.AddRange(entryFaker.faker.Generate(5));
         //Context.Reserves.AddRange(reserveFaker.faker.Generate(5));
         Context.Investments.AddRange(investments);
-        
+
 
         Context.SaveChanges();
     }

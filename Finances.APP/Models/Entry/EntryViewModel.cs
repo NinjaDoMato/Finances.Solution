@@ -8,6 +8,6 @@ namespace Finances.APP.Models.Entry
         public decimal Amount { get; set; }
 
         [DisplayName("Obrsvação")]
-        public string Observation { get; set; } =   string.Empty;
+        public string Observation { get; set; } = string.Empty;
     }
 }

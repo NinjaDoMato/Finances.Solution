@@ -1,5 +1,4 @@
-﻿using Finances.Database.Entities;
-using Finances.Database.Enums;
+﻿using Finances.Database.Enums;
 using System.ComponentModel;
 
 namespace Finances.APP.Models.Investment

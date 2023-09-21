@@ -3,6 +3,9 @@ using System.ComponentModel;
 
 namespace Finances.Database.Entities;
 
+/// <summary>
+/// Representation of the Investments that are active, used to calculate the estimated amount of the monthly income.
+/// </summary>
 public class Investment : BaseEntity
 {
     [DisplayName("Nome")]

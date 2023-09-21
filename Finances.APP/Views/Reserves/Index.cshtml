@@ -14,11 +14,11 @@
                 <div class="row no-gutters align-items-center">
                     @{
                         var currentD = Model
-                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Daniel)
+                        .Where(r => r.Owner == Finances.Database.Enums.AccountUser.Daniel)
                         .Sum(r => r.CurrentAmount);
 
                         var investedD = Model
-                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Daniel)
+                        .Where(r => r.Owner == Finances.Database.Enums.AccountUser.Daniel)
                         .Sum(r => r.InvestedAmount);
 
                         var percentD = Math.Round(investedD / currentD * 100, 2);
@@ -60,11 +60,11 @@
                 <div class="row no-gutters align-items-center">
                     @{
                         var currentC = Model
-                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Cassia)
+                        .Where(r => r.Owner == Finances.Database.Enums.AccountUser.Cassia)
                         .Sum(r => r.CurrentAmount);
 
                         var investedC = Model
-                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Cassia)
+                        .Where(r => r.Owner == Finances.Database.Enums.AccountUser.Cassia)
                         .Sum(r => r.InvestedAmount);
 
                         var percentC = Math.Round(investedC / currentC * 100, 2);
@@ -106,11 +106,11 @@
                 <div class="row no-gutters align-items-center">
                     @{
                         var currentDD = Model
-                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Commmon)
+                        .Where(r => r.Owner == Finances.Database.Enums.AccountUser.Commmon)
                         .Sum(r => r.CurrentAmount);
 
                         var investedDD = Model
-                        .Where(r => r.Owner == Finances.Database.Enums.ReserveOwner.Commmon)
+                        .Where(r => r.Owner == Finances.Database.Enums.AccountUser.Commmon)
                         .Sum(r => r.InvestedAmount);
 
                         var percentDD = Math.Round(investedDD / currentDD * 100, 2);

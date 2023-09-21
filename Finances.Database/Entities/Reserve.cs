@@ -3,6 +3,9 @@ using System.ComponentModel;
 
 namespace Finances.Database.Entities;
 
+/// <summary>
+/// Representation of the money reserves, each one must have a goal amount.
+/// </summary>
 public class Reserve : BaseEntity
 {
     [DisplayName("Nome")]
@@ -12,7 +15,7 @@ public class Reserve : BaseEntity
     public string Description { get; set; } = string.Empty;
 
     [DisplayName("Proprietário")]
-    public ReserveOwner Owner { get; set; }
+    public AccountUser Owner { get; set; }
 
     [DisplayName("Meta")]
     public decimal Goal { get; set; }

@@ -1,7 +1,5 @@
 ﻿using Finances.Database.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using NuGet.Configuration;
 
 namespace Finances.APP.Configuration;
 

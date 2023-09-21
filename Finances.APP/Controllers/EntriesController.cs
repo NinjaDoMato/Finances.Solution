@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Finances.Database.Context;
+using Finances.Database.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Finances.Database.Context;
-using Finances.Database.Entities;
 using NuGet.Packaging;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Finances.APP.Controllers
 {

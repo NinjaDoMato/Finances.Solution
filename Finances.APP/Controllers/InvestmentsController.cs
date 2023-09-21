@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Finances.APP.Models.Investment;
+using Finances.Database.Context;
+using Finances.Database.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Finances.Database.Context;
-using Finances.Database.Entities;
-using Finances.APP.Models.Investment;
 using NuGet.Packaging;
-using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace Finances.APP.Controllers
 {
@@ -297,7 +292,7 @@ namespace Finances.APP.Controllers
             var investment = _context.Investments
                 .Include(i => i.SourceReserves)
                 .FirstOrDefault(i => i.Id == investmentId);
-            
+
             if (investment == null)
                 return Json(new { success = false, message = "Investimento não encontrado." });
 

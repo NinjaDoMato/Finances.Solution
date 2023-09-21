@@ -1,13 +1,6 @@
 ﻿using Finances.Database.Context;
-using Finances.Database.Entities;
-using Finances.Database.Repository;
 using Finances.Tests.Context;
 using Finances.Tests.Fakers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Finances.Tests.RepositoryTests;
 
@@ -77,12 +70,12 @@ public abstract class TestBase<T> where T : BaseEntity
     {
         var testData = faker.GenerateOne();
         var count = repository.All().Count();
-        
+
         var result = await repository.InsertAsync(testData);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(count < repository.All().Count());
-        
+
         Assert.IsTrue(ValidateEntity(result));
     }
 

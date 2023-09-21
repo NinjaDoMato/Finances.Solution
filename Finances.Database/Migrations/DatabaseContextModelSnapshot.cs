@@ -45,7 +45,7 @@ namespace Finances.Database.Migrations
 
                     b.HasIndex("ReserveId");
 
-                    b.ToTable("Entries");
+                    b.ToTable("Entries", (string)null);
                 });
 
             modelBuilder.Entity("Finances.Database.Entities.Investment", b =>
@@ -84,7 +84,7 @@ namespace Finances.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Investments");
+                    b.ToTable("Investments", (string)null);
                 });
 
             modelBuilder.Entity("Finances.Database.Entities.Reserve", b =>
@@ -115,7 +115,7 @@ namespace Finances.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reserves");
+                    b.ToTable("Reserves", (string)null);
                 });
 
             modelBuilder.Entity("Finances.Database.Entities.ReserveInvestment", b =>
@@ -142,7 +142,7 @@ namespace Finances.Database.Migrations
 
                     b.HasIndex("InvestmentId");
 
-                    b.ToTable("ReserveInvestmentMaps");
+                    b.ToTable("ReserveInvestmentMaps", (string)null);
                 });
 
             modelBuilder.Entity("Finances.Database.Entities.Entry", b =>

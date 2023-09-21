@@ -1,12 +1,6 @@
 ﻿using Finances.Database.Configurations;
 using Finances.Database.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Finances.Database.Context;
 
@@ -18,6 +12,10 @@ public class DatabaseContext : DbContext
     public virtual DbSet<Investment> Investments { get; set; }
     public virtual DbSet<ReserveInvestment> ReserveInvestmentMaps { get; set; }
     public virtual DbSet<Entry> Entries { get; set; }
+    public virtual DbSet<Cost> Costs { get; set; }
+    public virtual DbSet<Payment> CostPayments { get; set; }
+    public virtual DbSet<Purchase> Purchases { get; set; }
+    public virtual DbSet<Installment> PurchaseInstallments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

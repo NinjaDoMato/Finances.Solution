@@ -1,6 +1,5 @@
 ﻿using Finances.APP.Models.Entry;
 using Finances.APP.Models.Investment;
-using Finances.Database.Entities;
 using Finances.Database.Enums;
 using System.ComponentModel;
 
@@ -26,7 +25,7 @@ namespace Finances.APP.Models.Reserve
         public decimal Goal { get; set; }
 
         [DisplayName("Proprietário")]
-        public ReserveOwner Owner{ get; set; }
+        public AccountUser Owner { get; set; }
 
         public List<EntryViewModel> Entries { get; set; } = new();
         public List<InvestmentViewModel> LinkedInvestments { get; set; } = new();
