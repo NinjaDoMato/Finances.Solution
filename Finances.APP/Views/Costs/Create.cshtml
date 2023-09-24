@@ -1,0 +1,84 @@
+﻿@model Finances.Database.Entities.Cost
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Criar</h1>
+
+<h4>Custo Fixo</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <select asp-for="Type" class="form-control">
+                    <option value="0">Diário</option>
+                    <option value="1">Semanal</option>
+                    <option value="2" selected>Mensal</option>
+                    <option value="3">Anual</option>
+                </select>                
+            </div>
+            <div class="form-group">
+                <label asp-for="DanielPercentage" class="control-label"></label>
+                <input id="percentageDaniel" type="number" asp-for="DanielPercentage" class="form-control" value="50" />
+                <span asp-validation-for="DanielPercentage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CassiaPercentage" class="control-label" value="50"></label>
+                <input id="percentageCassia" type="number" asp-for="CassiaPercentage" class="form-control" value="50" />
+                <span asp-validation-for="CassiaPercentage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $("#percentageDaniel").change(function () {
+                console.log($("#percentageDaniel").val());
+                var diff = 100 - $("#percentageDaniel").val();
+                console.log(diff);
+
+                $("#percentageCassia").val(diff);
+            });
+
+            $("#percentageCassia").change(function () {
+
+                var diff = 100 - $("#percentageCassia").val();
+
+                $("#percentageDaniel").val(diff);
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

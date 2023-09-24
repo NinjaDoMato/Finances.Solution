@@ -3,6 +3,7 @@ using System;
 using Finances.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Finances.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230924151550_AddedCostsInstallments")]
+    partial class AddedCostsInstallments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,12 +29,6 @@ namespace Finances.Database.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("CassiaPercentage")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("DanielPercentage")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<DateTime>("DateCreated")
@@ -54,6 +51,34 @@ namespace Finances.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Costs");
+                });
+
+            modelBuilder.Entity("Finances.Database.Entities.CostPayer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("AccountUser")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CostId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("LastUpdate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("PaymentPercentage")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostId");
+
+                    b.ToTable("CostPayer");
                 });
 
             modelBuilder.Entity("Finances.Database.Entities.Entry", b =>
@@ -270,6 +295,17 @@ namespace Finances.Database.Migrations
                     b.ToTable("ReserveInvestmentMaps");
                 });
 
+            modelBuilder.Entity("Finances.Database.Entities.CostPayer", b =>
+                {
+                    b.HasOne("Finances.Database.Entities.Cost", "Cost")
+                        .WithMany("CostPayers")
+                        .HasForeignKey("CostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cost");
+                });
+
             modelBuilder.Entity("Finances.Database.Entities.Entry", b =>
                 {
                     b.HasOne("Finances.Database.Entities.Reserve", "Reserve")
@@ -324,6 +360,8 @@ namespace Finances.Database.Migrations
 
             modelBuilder.Entity("Finances.Database.Entities.Cost", b =>
                 {
+                    b.Navigation("CostPayers");
+
                     b.Navigation("Payments");
                 });
 

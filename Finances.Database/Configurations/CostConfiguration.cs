@@ -11,9 +11,5 @@ public class CostConfiguration : IEntityTypeConfiguration<Cost>
         builder.HasMany(e => e.Payments)
                .WithOne(e => e.Cost)
                .HasForeignKey(e => e.CostId);
-
-        builder.HasMany(e => e.CostPayers)
-               .WithOne(e => e.Cost)
-               .HasForeignKey(e => e.CostId);
     }
 }

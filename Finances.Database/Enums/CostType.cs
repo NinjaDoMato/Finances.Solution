@@ -1,4 +1,6 @@
-﻿namespace Finances.Database.Enums;
+﻿using System.ComponentModel;
+
+namespace Finances.Database.Enums;
 
 public enum CostType
 {

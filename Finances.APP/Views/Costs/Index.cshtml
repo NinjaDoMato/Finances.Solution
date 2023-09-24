@@ -1,0 +1,107 @@
+﻿@model IEnumerable<Finances.Database.Entities.Cost>
+
+@{
+    ViewData["Title"] = "Index";
+
+    decimal dailyCost = Model.Where(c => c.Type == Finances.Database.Enums.CostType.Day).Sum(c => c.Amount);
+    decimal weeklyCost = Model.Where(c => c.Type == Finances.Database.Enums.CostType.Week).Sum(c => c.Amount);
+    decimal monthlyCost = Model.Where(c => c.Type == Finances.Database.Enums.CostType.Month).Sum(c => c.Amount);
+    decimal yearlyCost = Model.Where(c => c.Type == Finances.Database.Enums.CostType.Year).Sum(c => c.Amount);
+}
+
+<h1>Custos Fixos</h1>
+
+<div class="row container-fluid">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Custos Mensais
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @Math.Round(dailyCost + weeklyCost + monthlyCost + yearlyCost).ToString("C")
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-solid fa-arrow-trend-down fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Contas
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-solid fa-receipt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3" style="display: flex; justify-content: space-between;">
+            <div class="">
+                <h6 class="m-0 font-weight-bold text-primary">Custos</h6>
+            </div>
+            <div class="">
+                <a class="btn btn-primary" asp-action="Create">
+                    Novo custo fixo
+                </a>
+            </div>
+
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Name)</th>
+                            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+                            <th>@Html.DisplayNameFor(model => model.Type)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th>@Html.DisplayFor(modelItem => item.Name)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Amount)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Type)</th>
+
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable();
+    });
+</script>
