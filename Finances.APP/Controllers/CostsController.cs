@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Finances.Database.Context;
 using Finances.Database.Entities;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Hosting;
 
 namespace Finances.APP.Controllers
 {
@@ -56,7 +58,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Amount,Type,Name,Description,Id,DateCreated,LastUpdate")] Cost cost)
+        public async Task<IActionResult> Create([Bind("Amount,Type,Name,Description,Id,DanielPercentage,CassiaPercentage,DateCreated,LastUpdate")] Cost cost)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +78,7 @@ namespace Finances.APP.Controllers
                 return NotFound();
             }
 
-            var cost = await _context.Costs.FindAsync(id);
+            var cost = await _context.Costs.Include(c => c.Payments).FirstOrDefaultAsync(c => c.Id == id);
             if (cost == null)
             {
                 return NotFound();
@@ -89,7 +91,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Amount,Type,Name,Description,Id,DateCreated,LastUpdate")] Cost cost)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Amount,Type,Name,Description,Id,DanielPercentage,CassiaPercentage,DateCreated,LastUpdate")] Cost cost)
         {
             if (id != cost.Id)
             {
@@ -154,6 +156,40 @@ namespace Finances.APP.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [Route("Costs/{id}/Payment")]
+        public async Task<IActionResult> AddPayment(Guid id, decimal paidAmount, DateTime paidDate)
+        {
+            try
+            {
+                var cost = _context.Costs.Include(c => c.Payments).FirstOrDefault(m => m.Id == id);
+
+                if (cost == null)
+                    throw new Exception("Custo fixo não foi encontrado");
+
+                if (paidAmount <= 0)
+                    throw new Exception("O valor pago deve ser maior do que zero.");
+
+                if (paidDate.Date > DateTime.Now)
+                    throw new Exception("Não é poss~ivel realizar pagamentos em uma data futura.");
+
+                cost.Payments.Add(new Payment()
+                {
+                    CostId = id,
+                    DatePaid = paidDate,
+                    PaidAmount = paidAmount
+                });
+
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true }); // Return a success response
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }); // Return a success response
+            }
         }
 
         private bool CostExists(Guid id)

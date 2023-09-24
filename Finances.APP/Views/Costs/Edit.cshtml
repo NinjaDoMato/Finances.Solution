@@ -4,24 +4,15 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Editar</h1>
 
-<h4>Cost</h4>
+<h4>Custo Fixo</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Type" class="control-label"></label>
-                <select asp-for="Type" class="form-control"></select>
-                <span asp-validation-for="Type" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -32,28 +23,133 @@
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label"></label>
+                <input asp-for="Amount" class="form-control" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+           <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <select asp-for="Type" class="form-control">
+                    <option value="0">Diário</option>
+                    <option value="1">Semanal</option>
+                    <option value="2">Mensal</option>
+                    <option value="3">Anual</option>
+                </select>                
+            </div>
+            <div class="form-group">
+                <label asp-for="DanielPercentage" class="control-label"></label>
+                <input id="percentageDaniel" type="number" asp-for="DanielPercentage" class="form-control" value=@Math.Round(Model.DanielPercentage, 2)/>
+                <span asp-validation-for="DanielPercentage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CassiaPercentage" class="control-label"></label>
+                <input id="percentageCassia" type="number" asp-for="CassiaPercentage" class="form-control" value=@Math.Round(Model.CassiaPercentage, 2)/>
+                <span asp-validation-for="CassiaPercentage" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
+                <input asp-for="DateCreated" class="form-control" disabled />
                 <span asp-validation-for="DateCreated" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="LastUpdate" class="control-label"></label>
-                <input asp-for="LastUpdate" class="form-control" />
+                <input asp-for="LastUpdate" class="form-control" disabled />
                 <span asp-validation-for="LastUpdate" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label class="control-label">Adicionar Pagamento</label>
+                <div class="d-flex">
+
+                    <input type="date" class="form-control ml-2" id="paymentDate" />
+                    <input type="number" class="form-control ml-2" id="paymentAmount" value="0.00" />
+                    <span class="text-danger"></span>
+
+                    <button type="button" class="btn btn-primary ml-2" id="addReserve">Realizar Pagamento</button>
+                </div>
+            </div>
+
+
+            <!-- Table to display added reserves -->
+            <table class="table table-bordered mt-2" id="costPayments">
+                <thead>
+                    <tr>
+                        <th>Data de pagamento</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Payments.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(model => model.Payments[i].DatePaid)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => model.Payments[i].PaidAmount)
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+
+            <div class="form-group d-flex">
+                <a class="btn btn-secondary mr-2" asp-action="Index">Cancelar</a>
+                <input type="submit" value="Atualizar Custo Fixo" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $("#percentageDaniel").change(function () {
+                console.log($("#percentageDaniel").val());
+                var diff = 100 - $("#percentageDaniel").val();
+                console.log(diff);
+
+                $("#percentageCassia").val(diff);
+            });
+
+            $("#percentageCassia").change(function () {
+
+                var diff = 100 - $("#percentageCassia").val();
+
+                $("#percentageDaniel").val(diff);
+            });
+
+            // Handle adding a selected reserve
+            $("#addReserve").click(function () {
+                var id = "@Model.Id.ToString()";
+                var paidAmount = $("#paymentAmount").val();
+                var paidDate = $("#paymentDate").val();
+
+                if (paidAmount !== "" && paidDate != "") {
+                    $.ajax({
+                        url: "/Costs/" +  id + "/Payment",
+                        method: "POST",
+                        data: {
+                            paidAmount: paidAmount,
+                            paidDate: paidDate
+                        },
+                        success: function () {
+                            // Reload the page after adding the payment
+                            location.reload();
+                        },
+                        error: function () {
+                            // Handle the error if needed
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
