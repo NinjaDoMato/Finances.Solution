@@ -78,7 +78,10 @@
                                 @Html.DisplayFor(model => model.Installments[i].Paid)
                             </td>
                             <td>
-                                <button paymentId="@Model.Installments[i].Id.ToString()" type="button" class="btn btn-success btn-pay-purchase">Pagar</button>
+                                @if(!Model.Installments[i].Paid)
+                                {
+                                    <button paymentId="@Model.Installments[i].Id.ToString()" type="button" class="btn btn-success btn-pay-purchase">Pagar</button>
+                                }
                             </td>
                         </tr>
                     }
@@ -97,24 +100,25 @@
 @section Scripts {
     <script src="vendor/jquery/jquery.min.js"></script>
     <script>
-            $(".btn-pay-purchase").click(function () {
-                console.log('teste');
-                if (paymentId !== "") {
-                    $.ajax({
-                    url: "/Purchases/@Model.Id.ToString()/Payments/" + $(this).paymentId + "/Pay", // Replace with the correct URL
-                        method: "POST",
-                        success: function () {
-                            // Reload the page after adding the reserve
-                            location.reload();
-                        },
-                        error: function () {
-                            // Handle the error if needed
-                        }
-                    });
-                }
-            });
-        });
+        $(".btn-pay-purchase").click(function () {
 
+            var paymentID = $(this).attr('paymentId');
+
+            console.log(paymentID);
+            if (paymentID !== "") {
+                $.ajax({
+                    url: "/Purchases/@Model.Id.ToString()/Payments/" + paymentID + "/Pay", // Replace with the correct URL
+                    method: "POST",
+                    success: function () {
+                        // Reload the page after adding the reserve
+                        location.reload();
+                    },
+                    error: function () {
+                        // Handle the error if needed
+                    }
+                });
+            }
+        });
     </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
