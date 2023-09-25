@@ -3,6 +3,7 @@ using System;
 using Finances.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Finances.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230924223740_AddedColumnPurchaseDatePaid")]
+    partial class AddedColumnPurchaseDatePaid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,7 +112,7 @@ namespace Finances.Database.Migrations
                     b.Property<bool>("Paid")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTime?>("PaidDate")
+                    b.Property<DateTime>("PaidDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("PaymentUrl")

@@ -1,0 +1,141 @@
+﻿@model IEnumerable<Finances.Database.Entities.Purchase>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Parcelamentos</h1>
+
+<div class="row container-fluid">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Parcelamentos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @Model.Count()
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-solid fa-arrow-trend-down fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Compras Mi Moço
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @Model.Where(p => p.Owner == Finances.Database.Enums.AccountUser.Daniel).Count()
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-solid fa-arrow-trend-down fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Compras Mi Moça
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @Model.Where(p => p.Owner == Finances.Database.Enums.AccountUser.Cassia).Count()
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-solid fa-arrow-trend-down fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Compras dos Doise
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            @Model.Where(p => p.Owner == Finances.Database.Enums.AccountUser.Commmon).Count()
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-solid fa-receipt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3" style="display: flex; justify-content: space-between;">
+            <div class="">
+                <h6 class="m-0 font-weight-bold text-primary">Parcelamentos</h6>
+            </div>
+            <div class="">
+                <a class="btn btn-primary" asp-action="Create">
+                    Novo parcelamento
+                </a>
+            </div>
+
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Name)</th>
+                            <th>@Html.DisplayNameFor(model => model.Installments)</th>
+                            <th>@Html.DisplayNameFor(model => model.Owner)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th>@Html.DisplayFor(modelItem => item.Name)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Installments.Count)</th>
+                                <th>@Html.DisplayFor(modelItem => item.Owner)</th>
+
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable();
+    });
+</script>
