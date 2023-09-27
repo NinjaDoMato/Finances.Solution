@@ -94,6 +94,9 @@ namespace Finances.APP.Controllers
                 reserve.Id = Guid.NewGuid();
                 _context.Add(reserve);
                 await _context.SaveChangesAsync();
+
+                TempData["success"] = "Reserva registrada com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             return View(reserve);
@@ -145,6 +148,9 @@ namespace Finances.APP.Controllers
                         throw;
                     }
                 }
+
+                TempData["success"] = "Reserva alterada com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             return View(reserve);
@@ -184,6 +190,9 @@ namespace Finances.APP.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["success"] = "Reserva excluída com sucesso.";
+
             return RedirectToAction(nameof(Index));
         }
 

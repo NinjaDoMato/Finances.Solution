@@ -103,6 +103,8 @@ namespace Finances.APP.Controllers
 
                     _context.Add(investment);
                     await _context.SaveChangesAsync();
+                    
+                    TempData["success"] = "Investimento registrado com sucesso.";
 
                     return RedirectToAction("Index"); // Redirect to a list of investments or wherever you want
                 }
@@ -196,6 +198,9 @@ namespace Finances.APP.Controllers
                         throw;
                     }
                 }
+
+                TempData["success"] = "Investimento alterado com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
@@ -241,6 +246,8 @@ namespace Finances.APP.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            TempData["success"] = "Investimento excluído com sucesso.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -283,6 +290,8 @@ namespace Finances.APP.Controllers
 
             await _context.SaveChangesAsync();
 
+            TempData["success"] = "Reserva vinculada com sucesso.";
+
             return Json(new { success = true }); // Return a success response
         }
 
@@ -304,6 +313,8 @@ namespace Finances.APP.Controllers
                 investment.StartAmount = investment.SourceReserves.Sum(r => r.Amount);
                 _context.SaveChanges();
             }
+
+            TempData["success"] = "Reserva desvinculada com sucesso.";
 
             return Json(new { success = true }); // Return a success response
         }

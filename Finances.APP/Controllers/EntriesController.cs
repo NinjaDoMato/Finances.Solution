@@ -71,6 +71,9 @@ namespace Finances.APP.Controllers
 
                 _context.Add(entry);
                 await _context.SaveChangesAsync();
+
+                TempData["success"] = "Lançamento registrado com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ReserveId"] = new SelectList(_context.Reserves, "Id", "Description", entry.ReserveId);
@@ -124,6 +127,9 @@ namespace Finances.APP.Controllers
                         throw;
                     }
                 }
+
+                TempData["success"] = "Lançamento alterado com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             PopulateSelectList();
@@ -165,6 +171,9 @@ namespace Finances.APP.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["success"] = "Lançamento excluído com sucesso.";
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -60,36 +60,47 @@ namespace Finances.APP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,ProductUrl,Amount,Id,DateCreated,Installments,PurchaseDate,LastUpdate,Owner")] CreatePurchaseViewModel purchaseViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var purchase = new Purchase
+                if (ModelState.IsValid)
                 {
-                    Id = Guid.NewGuid(),
-                    Name = purchaseViewModel.Name,
-                    Installments = new List<Installment>(),
-                    Owner = purchaseViewModel.Owner,
-                    ProductUrl = purchaseViewModel.ProductUrl
-                };
-
-                var installmentAmount = Math.Round(purchaseViewModel.Amount / purchaseViewModel.Installments, 2);
-
-                for (int i = 1; i <= purchaseViewModel.Installments; i++)
-                {
-                    purchase.Installments.Add(new Installment()
+                    var purchase = new Purchase
                     {
-                        InstallmentNumber = i,
-                        Paid = false,
-                        Amount = installmentAmount,
-                        DueDate = DateTime.UtcNow.AddMonths(i),
-                        PaidDate = null,
-                        PaymentUrl = string.Empty
-                    });
-                }
+                        Id = Guid.NewGuid(),
+                        Name = purchaseViewModel.Name,
+                        Installments = new List<Installment>(),
+                        Owner = purchaseViewModel.Owner,
+                        ProductUrl = purchaseViewModel.ProductUrl
+                    };
 
-                _context.Add(purchase);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                    var installmentAmount = Math.Round(purchaseViewModel.Amount / purchaseViewModel.Installments, 2);
+
+                    for (int i = 1; i <= purchaseViewModel.Installments; i++)
+                    {
+                        purchase.Installments.Add(new Installment()
+                        {
+                            InstallmentNumber = i,
+                            Paid = false,
+                            Amount = installmentAmount,
+                            DueDate = DateTime.UtcNow.AddMonths(i),
+                            PaidDate = null,
+                            PaymentUrl = string.Empty
+                        });
+                    }
+
+                    _context.Add(purchase);
+                    await _context.SaveChangesAsync();
+
+                    TempData["success"] = "Parcelamento criado com sucesso.";
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch(Exception ex)
+            {
+                TempData["error"] = ex.Message;
+            }
+
             return View(purchaseViewModel);
         }
 

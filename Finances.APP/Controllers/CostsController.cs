@@ -65,6 +65,9 @@ namespace Finances.APP.Controllers
                 cost.Id = Guid.NewGuid();
                 _context.Add(cost);
                 await _context.SaveChangesAsync();
+
+                TempData["success"] = "Custo Fixo criado com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             return View(cost);
@@ -116,6 +119,9 @@ namespace Finances.APP.Controllers
                         throw;
                     }
                 }
+
+                TempData["success"] = "Custo Fixo alterado com sucesso.";
+
                 return RedirectToAction(nameof(Index));
             }
             return View(cost);
@@ -155,6 +161,9 @@ namespace Finances.APP.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["success"] = "Custo Fixo excluído com sucesso.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -184,10 +193,14 @@ namespace Finances.APP.Controllers
 
                 await _context.SaveChangesAsync();
 
+                TempData["success"] = "Pagamento registrado com sucesso.";
+
                 return Json(new { success = true }); // Return a success response
             }
             catch (Exception ex)
             {
+                TempData["error"] = ex.Message;
+               
                 return Json(new { success = false, message = ex.Message }); // Return a success response
             }
         }
