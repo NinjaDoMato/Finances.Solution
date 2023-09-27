@@ -1,6 +1,7 @@
 ﻿@model Finances.Database.Entities.Purchase
 
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Edit";
 }
 
@@ -78,7 +79,7 @@
                                 @Html.DisplayFor(model => model.Installments[i].Paid)
                             </td>
                             <td>
-                                @if(!Model.Installments[i].Paid)
+                                @if (!Model.Installments[i].Paid)
                                 {
                                     <button paymentId="@Model.Installments[i].Id.ToString()" type="button" class="btn btn-success btn-pay-purchase">Pagar</button>
                                 }

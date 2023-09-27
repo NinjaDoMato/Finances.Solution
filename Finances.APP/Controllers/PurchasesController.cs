@@ -120,31 +120,41 @@ namespace Finances.APP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,ProductUrl,Id,Owner,DateCreated,LastUpdate")] Purchase purchase)
         {
-            if (id != purchase.Id)
+            try
             {
-                return NotFound();
+                if (id != purchase.Id)
+                {
+                    return NotFound();
+                }
+
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        _context.Update(purchase);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!PurchaseExists(purchase.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+
+                TempData["success"] = "Parcelamento alterado com sucesso!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(purchase);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PurchaseExists(purchase.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
             return View(purchase);
         }
 
@@ -171,24 +181,35 @@ namespace Finances.APP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Purchases == null)
-            {
-                return Problem("Entity set 'DatabaseContext.Purchases'  is null.");
-            }
             var purchase = await _context.Purchases.Include(p => p.Installments).FirstOrDefaultAsync(p => p.Id == id);
-
-            if (purchase != null)
+            try
             {
-                foreach (var installment in purchase.Installments)
+                if (_context.Purchases == null)
                 {
-                    _context.PurchaseInstallments.Remove(installment);
+                    return Problem("Entity set 'DatabaseContext.Purchases'  is null.");
                 }
 
-                _context.Purchases.Remove(purchase);
-            }
+                if (purchase != null)
+                {
+                    foreach (var installment in purchase.Installments)
+                    {
+                        _context.PurchaseInstallments.Remove(installment);
+                    }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                    _context.Purchases.Remove(purchase);
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["success"] = "Parcelamento excluído com sucesso!";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return View(purchase);
+            }
         }
 
         [HttpPost()]
@@ -215,11 +236,12 @@ namespace Finances.APP.Controllers
                 _context.Update(installment);
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true});
-
+                TempData["success"] = "Pagamento registrado com sucesso!";
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
+                TempData["error"] = ex.Message;
                 return Json(new { success = false, message = ex.Message });
             }
         }
