@@ -4,6 +4,7 @@ using Finances.APP.Models.Reserve;
 using Finances.Database.Context;
 using Finances.Database.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finances.APP.Controllers
@@ -110,7 +111,7 @@ namespace Finances.APP.Controllers
                 return NotFound();
             }
 
-            var reserve = await _context.Reserves.FindAsync(id);
+            var reserve = await _context.Reserves.Include(r => r.Entries).FirstOrDefaultAsync(r => r.Id == id);
             if (reserve == null)
             {
                 return NotFound();
@@ -194,6 +195,27 @@ namespace Finances.APP.Controllers
             TempData["success"] = "Reserva excluída com sucesso.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Reserves/RemoveEntry/
+        [HttpPost]
+        public async Task<IActionResult> RemoveEntry(Guid id)
+        {
+            var entry = await _context.Entries.FindAsync(id);
+            if (entry != null)
+            {
+                _context.Entries.Remove(entry);
+
+                await _context.SaveChangesAsync();
+
+                TempData["success"] = "Laçamento excluído com sucesso.";
+                return Json(new { success = true, message = "Lançamento excluído com sucesso." });
+            }
+            else
+            {
+                TempData["error"] = "Laçamento não encontrado.";
+                return Json(new { success = false, message = "Lançamento não encontrado." });
+            }
         }
 
         private bool ReserveExists(Guid id)

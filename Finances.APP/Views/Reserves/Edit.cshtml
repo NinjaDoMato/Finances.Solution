@@ -42,17 +42,72 @@
                 <input asp-for="LastUpdate" class="form-control" disabled />
                 <span asp-validation-for="LastUpdate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="form-group d-flex">
+                <a class="btn btn-secondary mr-2" asp-action="Index">Voltar</a>
+                <input type="submit" value="Atualizar Reserva" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 col-lg-10">
+        <form asp-action="AddEntry">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="entryTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Data de lançcamento</th>
+                                <th>Valor</th>
+                                <th>Observação</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Entries.OrderByDescending(e => e.DateCreated))
+                            {
+                                <tr>
+                                    <td>
+                                        @(item.DateCreated.ToString("dd/MM/yyyy"))
+                                    </td>
+                                    <td>@(item.Amount.ToString("C"))</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Observation)</td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" onclick="RemoveEntry('@item.Id')">Remover</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="vendor/jquery/jquery.min.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+         // Handle removing a selected entry
+        function RemoveEntry(id)
+        {
+            $.ajax({
+                url: "/Reserves/RemoveEntry/", // Replace with the correct URL
+                method: "POST",
+                data: {
+                    id: id
+                },
+                success: function () {
+                   window.location.reload(true);
+                },
+                error: function () {
+                    // Handle the error if needed
+                }
+            });
+        }
+    </script>
 }

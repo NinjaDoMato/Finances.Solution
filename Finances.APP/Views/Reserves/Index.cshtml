@@ -214,6 +214,7 @@
                             <th>@Html.DisplayNameFor(model => model.Owner)</th>
                             <th>@Html.DisplayNameFor(model => model.CurrentAmount)</th>
                             <th>@Html.DisplayNameFor(model => model.InvestedAmount)</th>
+                            <th>Saldo</th>
                             <th>@Html.DisplayNameFor(model => model.Goal)</th>
                             <th></th>
                         </tr>
@@ -226,10 +227,11 @@
                                 <td>@Html.DisplayFor(modelItem => item.Owner)</td>
                                 <td>@Html.DisplayFor(modelItem => item.CurrentAmount)</td>
                                 <td>@Html.DisplayFor(modelItem => item.InvestedAmount)</td>
+                                <td>@((item.CurrentAmount - item.InvestedAmount).ToString("C"))</td>
                                 <td>@Html.DisplayFor(modelItem => item.Goal)</td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
-                                    <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
+                                    @* <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a> *@
                                     <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
                                 </td>
                             </tr>

@@ -103,7 +103,7 @@ namespace Finances.APP.Controllers
 
                     _context.Add(investment);
                     await _context.SaveChangesAsync();
-                    
+
                     TempData["success"] = "Investimento registrado com sucesso.";
 
                     return RedirectToAction("Index"); // Redirect to a list of investments or wherever you want
