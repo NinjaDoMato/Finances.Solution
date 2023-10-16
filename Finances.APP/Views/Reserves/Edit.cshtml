@@ -4,105 +4,140 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Gerenciar</h1>
 
-<h4>Reserve</h4>
+<h4>Reserva</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Owner" class="control-label"></label>
-                <select asp-for="Owner" class="form-control">
-                    <option value="0">Mi Moço</option>
-                    <option value="1">Mi Moça</option>
-                    <option value="2">Dos Doise</option>
-                </select>
-                <span asp-validation-for="Owner" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" disabled />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastUpdate" class="control-label"></label>
-                <input asp-for="LastUpdate" class="form-control" disabled />
-                <span asp-validation-for="LastUpdate" class="text-danger"></span>
-            </div>
+<div class="container col-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Goal" class="control-label"></label>
+                            <input asp-for="Goal" class="form-control" />
+                            <span asp-validation-for="Goal" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Owner" class="control-label"></label>
+                            <select asp-for="Owner" class="form-control">
+                                <option value="0">Mi Moço</option>
+                                <option value="1">Mi Moça</option>
+                                <option value="2">Dos Doise</option>
+                            </select>
+                            <span asp-validation-for="Owner" class="text-danger"></span>
+                        </div>
+                        <input type="hidden" asp-for="Id" />
+                        <div class="form-group">
+                            <label asp-for="DateCreated" class="control-label"></label>
+                            <input asp-for="DateCreated" class="form-control" disabled />
+                            <span asp-validation-for="DateCreated" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="LastUpdate" class="control-label"></label>
+                            <input asp-for="LastUpdate" class="form-control" disabled />
+                            <span asp-validation-for="LastUpdate" class="text-danger"></span>
+                        </div>
 
-            <div class="form-group d-flex">
-                <a class="btn btn-secondary mr-2" asp-action="Index">Voltar</a>
-                <input type="submit" value="Atualizar Reserva" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4 col-lg-10">
-        <form asp-action="AddEntry">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="entryTable" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Data de lançcamento</th>
-                                <th>Valor</th>
-                                <th>Observação</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Entries.OrderByDescending(e => e.DateCreated))
-                            {
-                                <tr>
-                                    <td>
-                                        @(item.DateCreated.ToString("dd/MM/yyyy"))
-                                    </td>
-                                    <td>@(item.Amount.ToString("C"))</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Observation)</td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger" onclick="RemoveEntry('@item.Id')">Remover</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                        <div class="form-group d-flex">
+                            <a class="btn btn-secondary mr-2" asp-action="Index">Voltar</a>
+                            <input type="submit" value="Atualizar Reserva" class="btn btn-primary" />
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
+    </div>
+
+    <div class="row table-content">
+        <div class="col-md-12">
+
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h4 class="font-weight-bold text-primary">Lançamentos</h4>
+                    <div class="table-responsive">
+                        <table name="Lançamentos" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Data de lançcamento</th>
+                                    <th>Valor</th>
+                                    <th>Observação</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Entries.OrderByDescending(e => e.DateCreated))
+                                {
+                                    <tr>
+                                        <td>
+                                            @(item.DateCreated.ToString("dd/MM/yyyy"))
+                                        </td>
+                                        <td>@(item.Amount.ToString("C"))</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Observation)</td>
+                                        <td>
+                                            <a><i title="Deletar" class="fas fa-trash text-gray-500 ml-1" onclick="RemoveEntry('@item.Id')"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    @@media (min-width: 1200px) {
+        .container {
+            display: flex;
+        }
+
+            .container .table-content {
+                margin-top: 0px;
+                margin-left: 20px;
+            }
+    }
+</style>
 
 @section Scripts {
     <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable();
+        });
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-         // Handle removing a selected entry
-        function RemoveEntry(id)
-        {
+        // Handle removing a selected entry
+        function RemoveEntry(id) {
             $.ajax({
                 url: "/Reserves/RemoveEntry/", // Replace with the correct URL
                 method: "POST",
                 data: {
                     id: id
                 },
+                beforeSend: function () {
+                    return confirm("Tem certeza que deseja remover este lançamento?");
+                },
                 success: function () {
-                   window.location.reload(true);
+                    window.location.reload(true);
                 },
                 error: function () {
                     // Handle the error if needed

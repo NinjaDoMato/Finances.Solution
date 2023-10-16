@@ -124,7 +124,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Owner,Id,DateCreated,LastUpdate")] Reserve reserve)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Owner,Id,DateCreated,LastUpdate,Goal")] Reserve reserve)
         {
             if (id != reserve.Id)
             {
