@@ -13,7 +13,9 @@
         <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-body">
+                    <h4 class="font-weight-bold text-primary">Dados</h4>
                     <form asp-action="Edit">
+                        <input type="hidden" asp-for="Id" id="hfReserveId" />
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-group">
                             <label asp-for="Name" class="control-label"></label>
@@ -39,7 +41,10 @@
                             </select>
                             <span asp-validation-for="Owner" class="text-danger"></span>
                         </div>
-                        <input type="hidden" asp-for="Id" />
+                        <div class="form-group">
+                            <label class="control-label">Saldo</label>
+                            <input class="form-control" disabled value="@((Model.Entries.Sum(e => e.Amount) - Model.LinkedInvestments.Sum(i => i.Amount)).ToString("C"))" />
+                        </div>
                         <div class="form-group">
                             <label asp-for="DateCreated" class="control-label"></label>
                             <input asp-for="DateCreated" class="form-control" disabled />
@@ -63,10 +68,17 @@
 
     <div class="row table-content">
         <div class="col-md-12">
-
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4" style="max-height: 600px; overflow: auto">
                 <div class="card-body">
-                    <h4 class="font-weight-bold text-primary">Lançamentos</h4>
+                    <div class="d-flex">
+                        <h4 class="font-weight-bold text-primary" style="text-align:start; justify-content:start">Lançamentos</h4>
+                        <div class="form-group d-flex" style="justify-content: end; padding-left:50px">
+                            <div class="col-md-5">
+                                <input class="form-control" id="inNewEntry" type="number" />
+                            </div>
+                            <button class="btn btn-primary ml-2" id="btnAddNewEntry">Adicionar</button>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table name="Lançamentos" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
@@ -118,7 +130,37 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#dataTable').DataTable();
+            $('#dataTable').DataTable({
+                "pageLength": 5,
+                "lengthChange": false,
+                "searching": false,
+                "order": [[0, 'desc']]
+            });
+
+            $('#btnAddNewEntry').on('click', function () {
+                var value = $('#inNewEntry').val();
+                var reserveId = "@Model.Id.ToString()";
+
+                if (value && value != 0) {
+                    $.ajax({
+                        url: "/Reserves/AddEntry/",
+                        method: "POST",
+                        data: {
+                            Amount: value,
+                            ReserveId: reserveId.toString(),
+                        },
+                        beforeSend: function () {
+                            return confirm("Tem certeza que deseja adicionar um novo lançamento?");
+                        },
+                        success: function () {
+                            window.location.reload(true);
+                        },
+                        error: function () {
+                            // Handle the error if needed
+                        }
+                    });
+                }
+            })
         });
     </script>
     @{

@@ -111,7 +111,11 @@ namespace Finances.APP.Controllers
                 return NotFound();
             }
 
-            var reserve = await _context.Reserves.Include(r => r.Entries).FirstOrDefaultAsync(r => r.Id == id);
+            var reserve = await _context.Reserves
+                .Include(r => r.Entries)
+                .Include(r => r.LinkedInvestments)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
             if (reserve == null)
             {
                 return NotFound();
@@ -217,6 +221,35 @@ namespace Finances.APP.Controllers
                 return Json(new { success = false, message = "Lançamento não encontrado." });
             }
         }
+
+
+        // POST: Reserves/RemoveEntry/
+        [HttpPost]
+        public async Task<IActionResult> AddEntry(Guid reserveId, decimal amount)
+        {
+            var reserve = await _context.Reserves
+                .Include(r => r.Entries)
+                .FirstOrDefaultAsync(r => r.Id == reserveId);
+
+            if (reserve != null)
+            {
+                reserve.Entries.Add(new Entry()
+                {
+                    Amount = amount,
+                });
+
+                await _context.SaveChangesAsync();
+
+                TempData["success"] = "Laçamento adicionado com sucesso.";
+                return Json(new { success = true, message = "Lançamento adicionado com sucesso." });
+            }
+            else
+            {
+                TempData["error"] = "Reserva não encontrada.";
+                return Json(new { success = false, message = "Reserva não encontrada." });
+            }
+        }
+
 
         private bool ReserveExists(Guid id)
         {
