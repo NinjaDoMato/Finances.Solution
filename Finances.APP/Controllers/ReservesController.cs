@@ -114,6 +114,7 @@ namespace Finances.APP.Controllers
             var reserve = await _context.Reserves
                 .Include(r => r.Entries)
                 .Include(r => r.LinkedInvestments)
+                    .ThenInclude(i => i.Investment)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (reserve == null)

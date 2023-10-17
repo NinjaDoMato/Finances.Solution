@@ -46,6 +46,10 @@
                             <input class="form-control" disabled value="@((Model.Entries.Sum(e => e.Amount) - Model.LinkedInvestments.Sum(i => i.Amount)).ToString("C"))" />
                         </div>
                         <div class="form-group">
+                            <label class="control-label">Investido</label>
+                            <input class="form-control" disabled value="@(Model.LinkedInvestments.Sum(i => i.Amount).ToString("C"))" />
+                        </div>
+                        <div class="form-group">
                             <label asp-for="DateCreated" class="control-label"></label>
                             <input asp-for="DateCreated" class="form-control" disabled />
                             <span asp-validation-for="DateCreated" class="text-danger"></span>
@@ -65,50 +69,88 @@
             </div>
         </div>
     </div>
+    <div class="row d-flex">
 
-    <div class="row table-content">
-        <div class="col-md-12">
-            <div class="card shadow mb-4" style="max-height: 600px; overflow: auto">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <h4 class="font-weight-bold text-primary" style="text-align:start; justify-content:start">Lançamentos</h4>
-                        <div class="form-group d-flex" style="justify-content: end; padding-left:50px">
-                            <div class="col-md-5">
-                                <input class="form-control" id="inNewEntry" type="number" />
+        <div class="row table-content">
+            <div class="col-md-12">
+                <div class="card shadow mb-4" style="max-height: 600px; overflow: auto">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h4 class="font-weight-bold text-primary" style="text-align:start; justify-content:start">Lançamentos</h4>
+                            <div class="form-group d-flex" style="justify-content: end; padding-left:50px">
+                                <div class="col-md-5">
+                                    <input class="form-control" id="inNewEntry" type="number" />
+                                </div>
+                                <button class="btn btn-primary ml-2" id="btnAddNewEntry">Adicionar</button>
                             </div>
-                            <button class="btn btn-primary ml-2" id="btnAddNewEntry">Adicionar</button>
                         </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table name="Lançamentos" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Data de lançcamento</th>
-                                    <th>Valor</th>
-                                    <th>Observação</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.Entries.OrderByDescending(e => e.DateCreated))
-                                {
+                        <div class="table-responsive">
+                            <table name="Lançamentos" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            @(item.DateCreated.ToString("dd/MM/yyyy"))
-                                        </td>
-                                        <td>@(item.Amount.ToString("C"))</td>
-                                        <td>@Html.DisplayFor(modelItem => item.Observation)</td>
-                                        <td>
-                                            <a><i title="Deletar" class="fas fa-trash text-gray-500 ml-1" onclick="RemoveEntry('@item.Id')"></i></a>
-                                        </td>
+                                        <th>Data de lançamento</th>
+                                        <th>Valor</th>
+                                        <th>Observação</th>
+                                        <th></th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Entries.OrderByDescending(e => e.DateCreated))
+                                    {
+                                        <tr>
+                                            <td>
+                                                @(item.DateCreated.ToString("dd/MM/yyyy"))
+                                            </td>
+                                            <td>@(item.Amount.ToString("C"))</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Observation)</td>
+                                            <td>
+                                                <a><i title="Deletar" class="fas fa-trash text-gray-500 ml-1" onclick="RemoveEntry('@item.Id')"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="row table-content">
+            <div class="col-md-12">
+                <div class="card shadow mb-4" style="max-height: 600px; overflow: auto">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h4 class="font-weight-bold text-primary" style="text-align:start; justify-content:start">Investimentos</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table name="Investimentos" class="table table-bordered" id="dataTableInvestments" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Investimento</th>
+                                        <th>Valor</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.LinkedInvestments.OrderByDescending(e => e.DateCreated))
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Investment.Name)</td>
+                                            <td>@(item.Amount.ToString("C"))</td>
+                                            <td>
+                                                <a href="/Investments/Edit/@item.InvestmentId"><i title="Ver detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -131,6 +173,13 @@
     <script>
         $(document).ready(function () {
             $('#dataTable').DataTable({
+                "pageLength": 5,
+                "lengthChange": false,
+                "searching": false,
+                "order": [[0, 'desc']]
+            });
+
+            $('#dataTableInvestments').DataTable({
                 "pageLength": 5,
                 "lengthChange": false,
                 "searching": false,
