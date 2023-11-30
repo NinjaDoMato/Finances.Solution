@@ -90,7 +90,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.OrderBy(m => m.EndDate))
                         {
                             <tr>
                                 <th>@Html.DisplayFor(modelItem => item.Name)</th>
@@ -98,13 +98,12 @@
                                 <th>@Html.DisplayFor(modelItem => item.StartAmount)</th>
                                 <th>@Html.DisplayFor(modelItem => item.CurrentAmount)</th>
                                 <th>@Html.DisplayFor(modelItem => item.Rentability)</th>
-                                <th>@Html.DisplayFor(modelItem => item.DateCreated)</th>
-                                <th>@Html.DisplayFor(modelItem => item.EndDate)</th>
+                                <th>@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
+                                <th>@(item.EndDate.ToString("dd/MM/yyyy"))</th>
 
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
-                                    <a asp-action="Details" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Liquidar" class="fas fa-hand-holding-usd text-gray-500 ml-1"></i></a>
                                 </td>
                             </tr>
                         }

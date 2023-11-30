@@ -215,7 +215,10 @@ namespace Finances.APP.Controllers
             }
 
             var investment = await _context.Investments
+                .Include(r => r.SourceReserves)
+                    .ThenInclude(r => r.Reserve)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (investment == null)
             {
                 return NotFound();
@@ -236,17 +239,40 @@ namespace Finances.APP.Controllers
 
             var investment = await _context.Investments
                 .Include(s => s.SourceReserves)
+                .ThenInclude(s => s.Reserve)
+                .ThenInclude(s => s.Entries)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (investment != null)
             {
+                // Check if there is any amount to distribute in the source reserves.
+
+                var income = investment.CurrentAmount - investment.StartAmount;
+                if (income > 0)
+                {
+                    // Calculates the proportional amount for each source reserve
+
+                    foreach (var reserve in investment.SourceReserves)
+                    {
+                        var proportional = (100 * reserve.Amount / investment.StartAmount) / 100;
+
+                        var proportionalReserveAmount = proportional * income;
+
+                        reserve.Reserve.Entries.Add(new()
+                        {
+                            Observation = $"Distribuíção dos lucros do investimento {investment.Name}",
+                            Amount = Math.Round(proportionalReserveAmount, 2)
+                        });
+                    }
+                }
+
                 _context.ReserveInvestmentMaps.RemoveRange(investment.SourceReserves);
                 _context.Investments.Remove(investment);
 
                 await _context.SaveChangesAsync();
             }
 
-            TempData["success"] = "Investimento excluído com sucesso.";
+            TempData["success"] = "Investimento liquidado com sucesso.";
 
             return RedirectToAction(nameof(Index));
         }
