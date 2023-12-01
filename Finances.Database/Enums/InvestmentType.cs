@@ -4,5 +4,7 @@ public enum InvestmentType
 {
     CDB,
     Tesouro_SELIC,
-    FII
+    FII,
+    LCI,
+    LCA
 }
