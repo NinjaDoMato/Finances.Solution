@@ -6,4 +6,5 @@ public enum AccountType
     XP,
     NuInvest,
     Bradesco,
+    Wise
 }
