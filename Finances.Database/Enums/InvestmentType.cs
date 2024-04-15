@@ -6,5 +6,6 @@ public enum InvestmentType
     Tesouro_SELIC,
     FII,
     LCI,
-    LCA
+    LCA,
+    Viagem
 }
