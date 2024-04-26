@@ -60,7 +60,21 @@
             @Html.DisplayFor(model => model.LastUpdate)
         </dd>
     </dl>
-    
+
+    <form asp-action="UpdateCurrentAmount" class="mb-4">
+        <input type="hidden" asp-for="Id" />
+        <div class="row">
+            <label class="control-label">Atualizar valor antes de liquidar</label>
+            <div class="col-lg-2 col-md-3 col-sm-3">
+                <input asp-for="CurrentAmount" class="form-control" />
+            </div>
+            <div class="col-sm-6">
+                <input type="submit" value="Atualizar" class="btn btn-primary" />
+            </div>
+        </div>
+        <hr />
+    </form>
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         <a class="btn btn-secondary" asp-action="Index">Cancelar</a>

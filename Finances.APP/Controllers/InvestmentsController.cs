@@ -206,6 +206,43 @@ namespace Finances.APP.Controllers
             return View(viewModel);
         }
 
+        // POST: Investments/UpdateCurrentAmount/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCurrentAmount(UpdateInvestmentViewModel viewModel)
+        {
+            var investment = await _context.Investments
+                .Include(i => i.SourceReserves)
+                .FirstOrDefaultAsync(i => i.Id == viewModel.Id);
+
+            if (investment == null)
+            {
+                return NotFound();
+            }
+
+            investment.CurrentAmount = viewModel.CurrentAmount;
+
+            if (investment.CurrentAmount < investment.StartAmount)
+                investment.CurrentAmount = investment.StartAmount;
+
+            _context.Update(investment);
+            await _context.SaveChangesAsync();
+
+            TempData["success"] = "Investimento alterado com sucesso.";
+
+            // Check if the method was called from the Delete page
+            if (Request.Headers["Referer"].ToString().Contains("/Investments/Delete"))
+            {
+                return RedirectToAction("Delete", new { id = viewModel.Id });
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
         // GET: Investments/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
