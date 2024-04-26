@@ -98,8 +98,8 @@
                                 <th>@Html.DisplayFor(modelItem => item.StartAmount)</th>
                                 <th>@Html.DisplayFor(modelItem => item.CurrentAmount)</th>
                                 <th>@Html.DisplayFor(modelItem => item.Rentability)</th>
-                                <th>@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
-                                <th>@(item.EndDate.ToString("dd/MM/yyyy"))</th>
+                                <th data-order="@(item.DateCreated.Ticks)">@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
+                                <th data-order="@(item.EndDate.Ticks)">@(item.EndDate.ToString("dd/MM/yyyy"))</th>
 
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>

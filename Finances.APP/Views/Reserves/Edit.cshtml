@@ -98,9 +98,7 @@
                                     @foreach (var item in Model.Entries.OrderByDescending(e => e.DateCreated))
                                     {
                                         <tr>
-                                            <td>
-                                                @(item.DateCreated.ToString("dd/MM/yyyy"))
-                                            </td>
+                                            <td data-order="@(item.DateCreated.Ticks)">@(item.DateCreated.ToString("dd/MM/yyyy"))</td>
                                             <td>@(item.Amount.ToString("C"))</td>
                                             <td>@Html.DisplayFor(modelItem => item.Observation)</td>
                                             <td>

@@ -92,7 +92,7 @@
                             <tr>
                                 <th>@Html.DisplayFor(modelItem => item.Reserve.Name)</th>
                                 <th>@Html.DisplayFor(modelItem => item.Amount)</th>
-                                <th>@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
+                                <th data-order ="@(item.DateCreated.Ticks)">@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
                                 <th>@Html.DisplayFor(modelItem => item.Observation)</th>
 
 
