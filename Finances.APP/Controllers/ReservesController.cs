@@ -72,7 +72,7 @@ namespace Finances.APP.Controllers
                 Owner = reserve.Owner,
                 CurrentAmount = reserve.Entries.Sum(e => e.Amount),
                 InvestedAmount = reserve.LinkedInvestments.Sum(l => l.Amount),
-                Entries = reserve.Entries.Select(e => new EntryViewModel { Amount = e.Amount, Observation = e.Observation }).ToList(),
+                Entries = reserve.Entries.OrderByDescending(e => e.DateCreated).Select(e => new EntryViewModel { Amount = e.Amount, Observation = e.Observation }).ToList(),
                 LinkedInvestments = reserve.LinkedInvestments.Select(l => new InvestmentViewModel { Account = l.Investment.Account, CurrentAmount = l.Investment.CurrentAmount, Name = l.Investment.Name, Rentability = l.Investment.Rentability, StartAmount = l.Investment.StartAmount, Type = l.Investment.Type }).ToList()
             });
         }

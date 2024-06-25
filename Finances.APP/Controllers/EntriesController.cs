@@ -20,7 +20,7 @@ namespace Finances.APP.Controllers
         public async Task<IActionResult> Index()
         {
             var databaseContext = _context.Entries.Include(e => e.Reserve);
-            return View(await databaseContext.ToListAsync());
+            return View(await databaseContext.OrderByDescending(e => e.DateCreated).ToListAsync());
         }
 
         // GET: Entries/Details/5
