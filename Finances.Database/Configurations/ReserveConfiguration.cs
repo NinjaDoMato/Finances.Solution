@@ -8,6 +8,7 @@ public class ReserveConfiguration : IEntityTypeConfiguration<Reserve>
 {
     public void Configure(EntityTypeBuilder<Reserve> builder)
     {
+        builder.ToTable("Reserves");
         builder.HasMany(e => e.Entries)
                .WithOne(e => e.Reserve);
     }

@@ -8,6 +8,7 @@ public class EntryConfiguration : IEntityTypeConfiguration<Entry>
 {
     public void Configure(EntityTypeBuilder<Entry> builder)
     {
+        builder.ToTable("Entries");
         builder.HasOne(e => e.Reserve)
                .WithMany(e => e.Entries)
                .HasForeignKey(e => e.ReserveId);

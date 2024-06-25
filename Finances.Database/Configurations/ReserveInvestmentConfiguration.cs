@@ -8,6 +8,7 @@ public class ReserveInvestmentConfiguration : IEntityTypeConfiguration<ReserveIn
 {
     public void Configure(EntityTypeBuilder<ReserveInvestment> builder)
     {
+        builder.ToTable("ReserveInvestmentsMaps");
         builder.HasKey(e => new { e.ReserveId, e.InvestmentId });
 
         builder.HasOne(e => e.Reserve)
