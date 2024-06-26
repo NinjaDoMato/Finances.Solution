@@ -1,0 +1,48 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/home-assistant
+    volumes:
+      - /home/admin/volumes/hass:/config
+      - /etc/localtime:/etc/localtime:ro
+#    ports:
+#     - 8123:8123
+    network_mode: host
+    restart: unless-stopped
+
+  financesapp_PROD:
+    container_name: financesapp
+    image: financesapp:latest
+    build:
+        context: /home/admin/Desktop/Finances.Solution
+        dockerfile: Finances.APP/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - mysql
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=finances;User=root;Password=root;
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: finances
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d  # Mount the directory with initialization scripts
+    ports:
+      - "3306:3306"
+
+volumes:
+  mysql_data:
+
+
+# set trusted docker internal network
+networks:
+  default:
+      ipam:  
+        config: 
+         - subnet: 172.10.0.0/24

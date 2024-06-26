@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.Database", "Financ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.Tests", "Finances.Tests\Finances.Tests.csproj", "{042EA74F-1E5B-471B-9BD3-B45A099CDD0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finances.APP", "Finances.APP\Finances.APP.csproj", "{7E771D17-FA36-4209-8144-7027081D1BBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Finances.APP", "Finances.APP\Finances.APP.csproj", "{7E771D17-FA36-4209-8144-7027081D1BBB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B2DEC25C-7813-425B-A0C0-FBEF12551753}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
