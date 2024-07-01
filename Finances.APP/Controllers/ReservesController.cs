@@ -1,4 +1,5 @@
-﻿using Finances.APP.Models.Entry;
+﻿using Finances.APP.Extensions;
+using Finances.APP.Models.Entry;
 using Finances.APP.Models.Investment;
 using Finances.APP.Models.Reserve;
 using Finances.Database.Context;
@@ -122,6 +123,50 @@ namespace Finances.APP.Controllers
                 return NotFound();
             }
             return View(reserve);
+        }
+
+        // GET: Reserves/AmountByMonth
+        [HttpGet]
+        public async Task<ReserveExtractByMonth> AmountByMonth([FromQuery] DateTime? startDate, [FromQuery] DateTime? finishDate)
+        {
+            if (startDate == null || finishDate == null)
+            {
+                startDate = DateTime.Now.AddMonths(-6);
+                finishDate = DateTime.Now;
+            }
+
+            // Get the labels
+            ReserveExtractByMonth reserveExtract = new();
+
+            DateTime reference = startDate.Value;
+            while (reference <= finishDate)
+            {
+                reserveExtract.Labels.Add(reference.GetMonthName());
+                reference = reference.AddMonths(1);
+            }
+
+            // Get the reserves extract by month
+            foreach (var reserve in await _context.Reserves.Include(r => r.Entries).ToListAsync())
+            {
+                ReserveValue reserveValues = new()
+                {
+                    ReserveName = reserve.Name
+                };
+
+                DateTime referenceDate = startDate.Value;
+                decimal cumulativeTotal = reserve.Entries.Where(e => e.DateCreated < startDate).Sum(e => e.Amount);
+
+                while (referenceDate <= finishDate)
+                {
+                    cumulativeTotal += reserve.Entries.Where(e => e.DateCreated.Month == referenceDate.Month && e.DateCreated.Year == referenceDate.Year).Sum(e => e.Amount);
+                    reserveValues.AmountByMonth.Add(cumulativeTotal);
+                    referenceDate = referenceDate.AddMonths(1);
+                }
+
+                reserveExtract.Reserves.Add(reserveValues);
+            }
+
+            return reserveExtract;
         }
 
         // POST: Reserves/Edit/5
