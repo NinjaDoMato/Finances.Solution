@@ -111,7 +111,7 @@ namespace Finances.APP.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = $"There was an error creating the investment.\n{ex.Message}";
+                TempData["error"] = ex.Message;
             }
 
             // If ModelState is not valid, re-populate the dropdown
