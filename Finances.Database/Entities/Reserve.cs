@@ -20,6 +20,9 @@ public class Reserve : BaseEntity
     [DisplayName("Meta")]
     public decimal Goal { get; set; }
 
+    [DisplayName("Cor de Fundo")]
+    public string DisplayColor { get; set; } = string.Empty;
+
     public IList<Entry> Entries { get; set; } = new List<Entry>();
     public IList<ReserveInvestment> LinkedInvestments { get; set; } = new List<ReserveInvestment>();
 }
