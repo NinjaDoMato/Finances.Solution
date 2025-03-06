@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Finances.APP/bin/Debug/net7.0/Finances.APP.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Finances.APP",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "powershell",
+                "pipeArgs": ["-Command"],
+                "debuggerPath": "C:\\Users\\segfy\\scoop\\apps\\netcoredbg\\3.1.2-1054\\netcoredbg.exe"
+            }
+        }
+    ]
+}
