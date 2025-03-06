@@ -1,0 +1,69 @@
+:root {
+    /* Tema Claro (padrão) */
+    --bg-primary: #fff;
+    --bg-secondary: #f8f9fc;
+    --text-primary: #5a5c69;
+    --text-secondary: #858796;
+    --border-color: #e3e6f0;
+    --sidebar-bg: #4e73df;
+    --sidebar-text: #fff;
+    --card-bg: #fff;
+}
+
+[data-theme="dark"] {
+    /* Tema Escuro */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --border-color: #404040;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #fff;
+    --card-bg: #333333;
+}
+
+/* Aplicando as variáveis */
+body {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+#content-wrapper {
+    background-color: var(--bg-secondary) !important;
+}
+
+.card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.sidebar {
+    background: var(--sidebar-bg) !important;
+}
+
+.sidebar-dark .nav-item .nav-link {
+    color: var(--sidebar-text) !important;
+}
+
+.topbar {
+    background-color: var(--bg-primary) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dropdown-menu {
+    background-color: var(--bg-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.dropdown-item {
+    color: var(--text-primary) !important;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Transição suave ao trocar tema */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease;
+} 
