@@ -382,6 +382,24 @@ namespace Finances.APP.Controllers
             return Json(new { success = true }); // Return a success response
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Upcoming()
+        {
+            var now = DateTime.Now.Date;
+            var threeDays = now.AddDays(3);
+            var investments = await _context.Investments
+                .Where(i => i.EndDate <= threeDays)
+                .OrderBy(i => i.EndDate)
+                .Take(10)
+                .Select(i => new {
+                    i.Id,
+                    i.Name,
+                    i.CurrentAmount,
+                    i.EndDate
+                })
+                .ToListAsync();
+            return Json(investments);
+        }
 
         private bool InvestmentExists(Guid id)
         {
