@@ -139,20 +139,13 @@
                         },
                         legend: { display: false },
                         tooltips: {
-                            titleMarginBottom: 10,
-                            titleFontColor: colors.tooltipTitle,
-                            titleFontSize: 14,
-                            backgroundColor: colors.tooltipBg,
-                            bodyFontColor: colors.tooltipBody,
-                            borderColor: colors.tooltipBorder,
-                            borderWidth: 1,
-                            xPadding: 15,
-                            yPadding: 15,
-                            displayColors: true,
-                            caretPadding: 10,
+                            mode: 'index',
                             callbacks: {
-                                label: function (tooltipItem, chart) {
-                                    var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                title: function(tooltipItems, data) {
+                                    return data.labels[tooltipItems[0].index];
+                                },
+                                label: function(tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label;
                                     return datasetLabel + ': ' + formatCurrency(tooltipItem.yLabel);
                                 }
                             }
@@ -316,6 +309,18 @@
                             labels: {
                                 boxWidth: 12,
                                 padding: 15
+                            }
+                        },
+                        tooltips: {
+                            mode: 'index',
+                            callbacks: {
+                                title: function(tooltipItems, data) {
+                                    return data.labels[tooltipItems[0].index];
+                                },
+                                label: function(tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label;
+                                    return datasetLabel + ': ' + formatCurrency(tooltipItem.yLabel);
+                                }
                             }
                         },
                         scales: {
