@@ -386,9 +386,7 @@ namespace Finances.APP.Controllers
         public async Task<IActionResult> Upcoming()
         {
             var now = DateTime.Now.Date;
-            var threeDays = now.AddDays(3);
             var investments = await _context.Investments
-                .Where(i => i.EndDate <= threeDays)
                 .OrderBy(i => i.EndDate)
                 .Take(10)
                 .Select(i => new {
@@ -408,7 +406,7 @@ namespace Finances.APP.Controllers
                 .GroupBy(i => i.Type)
                 .Select(g => new {
                     type = g.Key.ToString(),
-                    count = g.Count()
+                    count = g.Sum(i => i.CurrentAmount)
                 })
                 .ToListAsync();
             return Json(data);
