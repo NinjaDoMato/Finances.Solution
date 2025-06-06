@@ -42,6 +42,18 @@
 
         <!-- Page level custom scripts -->
         <script>
+            function getChartColors() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                return {
+                    backgroundColor: isDark ? '#23272b' : '#fff',
+                    gridColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+                    zeroLineColor: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.25)',
+                    tooltipBg: isDark ? '#23272b' : '#fff',
+                    tooltipTitle: isDark ? '#fff' : '#6e707e',
+                    tooltipBody: isDark ? '#fff' : '#858796',
+                    tooltipBorder: isDark ? '#444' : '#dddfeb',
+                };
+            }
 
             function formatCurrency(amount) {
                 const formatter = new Intl.NumberFormat('pt-BR', {
@@ -50,112 +62,126 @@
                 });
                 return formatter.format(amount);
             }
-            $.ajax({
-                url: '/Reserves/AmountByMonth',
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // Handle the response data here
-                    var ctx = document.getElementById("chartMontinhos");
-                    ctx.style.backgroundColor = "white";
 
-                    let dataset = [];
-                    let maxAmount = 0;
-                    data.reserves.forEach((element) => {
-                        dataset.push(
-                            {
-                                label: element.reserveName,
-                                borderColor: element.reserveDisplayColor,
-                                data: element.amountByMonth,
-                                backgroundColor: "rgba(255, 255, 255, 0)",
-                            });
+            let chartMontinhosInstance = null;
+            let chartMontinhosData = null;
+            let chartMontinhosMax = 0;
 
-                        if (maxAmount < Math.max(Math.max(...element.amountByMonth))) {
-                            maxAmount = Math.ceil(Math.max(...element.amountByMonth));
-                        }
-                    });
+            function renderMontinhosChart(data) {
+                const ctx = document.getElementById("chartMontinhos");
+                const colors = getChartColors();
+                ctx.style.backgroundColor = colors.backgroundColor;
 
-                    var myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: data.labels,
-                            datasets: dataset,
-                        },
-                        options: {
-                            maintainAspectRatio: false,
-                            layout: {
-                                padding: {
-                                    left: 10,
-                                    right: 25,
-                                    top: 25,
-                                    bottom: 0
-                                },
-                            },
-                            scales: {
-                                xAxes: [{
-                                    time: {
-                                        unit: 'month'
-                                    },
-                                    gridLines: {
-                                        display: true,
-                                        drawBorder: false
-                                    },
-                                    ticks: {
-                                        maxTicksLimit: 10
-                                    },
-                                    maxBarThickness: 20,
-                                }],
-                                yAxes: [{
-                                    ticks: {
-                                        min: 0,
-                                        max: maxAmount,
-                                        maxTicksLimit: 5,
-                                        padding: 15,
-                                        // Include a BRL sign in the ticks
-                                        callback: function (value, index, values) {
-                                            return formatCurrency(value);
-                                        }
-                                    },
-                                    gridLines: {
-                                        color: "rgb(255, 255, 255)",
-                                        zeroLineColor: "rgb(255, 255, 255)",
-                                        drawBorder: false,
-                                        borderDash: [2],
-                                        zeroLineBorderDash: [2]
-                                    }
-                                }],
-                            },
-                            legend: {
-                                display: false
-                            },
-                            tooltips: {
-                                titleMarginBottom: 10,
-                                titleFontColor: '#6e707e',
-                                titleFontSize: 14,
-                                backgroundColor: "rgb(255,255,255)",
-                                bodyFontColor: "#858796",
-                                borderColor: '#dddfeb',
-                                borderWidth: 1,
-                                xPadding: 15,
-                                yPadding: 15,
-                                displayColors: true,
-                                caretPadding: 10,
-                                callbacks: {
-                                    label: function (tooltipItem, chart) {
-                                        var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                                        return datasetLabel + ': ' + formatCurrency(tooltipItem.yLabel);
-                                    }
-                                }
-                            },
-                        }
-                    });
-                },
-                error: function (xhr, status, error) {
-                    // Handle the error here
-                    console.log(error);
+                if (chartMontinhosInstance) {
+                    chartMontinhosInstance.destroy();
                 }
-            });
-            // Bar Chart Example
 
+                let dataset = [];
+                let maxAmount = 0;
+                data.reserves.forEach((element) => {
+                    dataset.push({
+                        label: element.reserveName,
+                        borderColor: element.reserveDisplayColor,
+                        data: element.amountByMonth,
+                        backgroundColor: "rgba(255, 255, 255, 0)",
+                    });
+                    if (maxAmount < Math.max(...element.amountByMonth)) {
+                        maxAmount = Math.ceil(Math.max(...element.amountByMonth));
+                    }
+                });
+                chartMontinhosMax = maxAmount;
+
+                chartMontinhosInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: dataset,
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: { left: 10, right: 25, top: 25, bottom: 0 },
+                        },
+                        scales: {
+                            xAxes: [{
+                                time: { unit: 'month' },
+                                gridLines: {
+                                    display: true,
+                                    drawBorder: false,
+                                    color: colors.gridColor,
+                                },
+                                ticks: { maxTicksLimit: 10 },
+                                maxBarThickness: 20,
+                            }],
+                            yAxes: [{
+                                ticks: {
+                                    min: 0,
+                                    max: maxAmount,
+                                    maxTicksLimit: 5,
+                                    padding: 15,
+                                    callback: function (value) { return formatCurrency(value); }
+                                },
+                                gridLines: {
+                                    color: colors.gridColor,
+                                    zeroLineColor: colors.zeroLineColor,
+                                    drawBorder: false,
+                                    borderDash: [2],
+                                    zeroLineBorderDash: [2]
+                                }
+                            }],
+                        },
+                        legend: { display: false },
+                        tooltips: {
+                            titleMarginBottom: 10,
+                            titleFontColor: colors.tooltipTitle,
+                            titleFontSize: 14,
+                            backgroundColor: colors.tooltipBg,
+                            bodyFontColor: colors.tooltipBody,
+                            borderColor: colors.tooltipBorder,
+                            borderWidth: 1,
+                            xPadding: 15,
+                            yPadding: 15,
+                            displayColors: true,
+                            caretPadding: 10,
+                            callbacks: {
+                                label: function (tooltipItem, chart) {
+                                    var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + formatCurrency(tooltipItem.yLabel);
+                                }
+                            }
+                        },
+                    }
+                });
+            }
+
+            function fetchAndRenderMontinhosChart() {
+                $.ajax({
+                    url: '/Reserves/AmountByMonth',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        chartMontinhosData = data;
+                        renderMontinhosChart(data);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            // Inicializa o gráfico
+            fetchAndRenderMontinhosChart();
+
+            // Atualiza o gráfico ao trocar o tema
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        if (chartMontinhosData) {
+                            renderMontinhosChart(chartMontinhosData);
+                        }
+                    }
+                });
+            });
+            observer.observe(document.documentElement, { attributes: true });
         </script>
     }
