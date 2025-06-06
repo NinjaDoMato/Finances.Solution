@@ -5,37 +5,47 @@
 
 <div class="text-center">
     <!-- Area Chart -->
-    <div class="row justify-content-center">
-        <div class="col-xl-8 col-lg-7 mb-4">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
+    <div class="row">
+        <div class="col-xl-6 col-lg-5 mb-4">
+            <div class="card shadow mb-4 h-100">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Montinhos</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Capital Acumulado</h6>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-bar">
-                        <canvas id="chartMontinhos"></canvas>
+                <div class="card-body d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <div class="chart-bar w-100" style="height: 350px; max-width: 500px;">
+                        <canvas id="chartCapitalAcumulado" style="max-width: 100%; max-height: 350px;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-lg-5 mb-4">
+        <div class="col-xl-2 col-lg-2 mb-4">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Valor por Tipo de Investimento</h6>
+                </div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center" style="height: 400px;">
+                    <canvas id="donutInvestments" width="180" height="180" style="max-width: 180px; max-height: 180px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-5 mb-4">
             <div class="card shadow mb-4 h-100">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Próximos investimentos</h6>
                 </div>
-                <div class="card-body p-0" style="height: 340px; overflow-y: auto;">
+                <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
                     <ul id="upcoming-investments-list" class="list-group list-group-flush" style="border-radius: 0.35rem;">
                         <li class="list-group-item text-center text-secondary">Carregando...</li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-lg-5 mb-4">
+    </div>
+    <div class="row">
+        <div class="col-xl-5 col-lg-6 mb-4">
             <div class="card shadow mb-4 h-100">
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Valor Total por Tipo de Investimento</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Valor por Tipo de Investimento</h6>
                 </div>
                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
                     <canvas id="donutInvestments" width="220" height="220"></canvas>
@@ -269,11 +279,13 @@
                             },
                             options: {
                                 responsive: false,
-                                legend: {
-                                    display: true,
-                                    position: 'bottom',
-                                    labels: {
-                                        fontColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#858796'
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'bottom',
+                                        labels: {
+                                            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#222'
+                                        }
                                     }
                                 },
                                 tooltips: {
@@ -287,11 +299,85 @@
                     });
             }
 
+            function renderCapitalAcumuladoChart(data) {
+                const ctx = document.getElementById('chartCapitalAcumulado');
+                if (window.capitalAcumuladoChart) window.capitalAcumuladoChart.destroy();
+                window.capitalAcumuladoChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'Investido',
+                                data: data.investedByMonth,
+                                backgroundColor: '#3b82f6',
+                                stack: 'Stack 0',
+                                barPercentage: 0.5,
+                                categoryPercentage: 0.6
+                            },
+                            {
+                                label: 'Disponível',
+                                data: data.availableByMonth,
+                                backgroundColor: '#f59e0b',
+                                stack: 'Stack 0',
+                                barPercentage: 0.5,
+                                categoryPercentage: 0.6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#858796'
+                                }
+                            },
+                            title: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: {
+                                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'
+                                },
+                                ticks: {
+                                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#858796'
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                grid: {
+                                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'
+                                },
+                                ticks: {
+                                    color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#858796'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function loadCapitalAcumuladoChart() {
+                fetch('/Reserves/CapitalAcumuladoPorMes')
+                    .then(res => res.json())
+                    .then(data => {
+                        renderCapitalAcumuladoChart(data);
+                    });
+            }
+
             // Executa apenas quando o DOM estiver pronto
             document.addEventListener('DOMContentLoaded', function () {
                 fetchAndRenderMontinhosChart();
                 loadUpcomingInvestments();
                 loadDonutChart();
+                loadCapitalAcumuladoChart();
 
                 // Atualiza o gráfico ao trocar o tema
                 const observer = new MutationObserver(function (mutations) {
@@ -302,6 +388,7 @@
                             }
                             loadUpcomingInvestments();
                             loadDonutChart();
+                            loadCapitalAcumuladoChart();
                         }
                     });
                 });

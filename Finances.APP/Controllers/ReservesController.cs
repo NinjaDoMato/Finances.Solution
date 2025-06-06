@@ -297,6 +297,56 @@ namespace Finances.APP.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CapitalAcumuladoPorMes([FromQuery] DateTime? startDate, [FromQuery] DateTime? finishDate)
+        {
+            if (startDate == null || finishDate == null)
+            {
+                startDate = DateTime.Now.AddMonths(-5); // Inclui o mês atual
+                finishDate = DateTime.Now;
+            }
+
+            var labels = new List<string>();
+            DateTime reference = startDate.Value;
+            while (reference <= finishDate)
+            {
+                labels.Add(reference.GetMonthName());
+                reference = reference.AddMonths(1);
+            }
+
+            var investedByMonth = new List<decimal>();
+            var availableByMonth = new List<decimal>();
+
+            for (int i = 0; i < labels.Count; i++)
+            {
+                DateTime monthStart = startDate.Value.AddMonths(i);
+                DateTime monthEnd = new DateTime(monthStart.Year, monthStart.Month, DateTime.DaysInMonth(monthStart.Year, monthStart.Month));
+
+                decimal invested = 0;
+                decimal available = 0;
+
+                foreach (var reserve in await _context.Reserves.Include(r => r.Entries).Include(r => r.LinkedInvestments).ToListAsync())
+                {
+                    // Investido: soma dos investimentos ativos nesse mês
+                    invested += reserve.LinkedInvestments
+                        .Where(li => li.DateCreated <= monthEnd)
+                        .Sum(li => li.Amount);
+
+                    // Disponível: soma das entradas - saídas (investimentos) até o fim do mês
+                    decimal entradas = reserve.Entries.Where(e => e.DateCreated <= monthEnd).Sum(e => e.Amount);
+                    decimal saidas = reserve.LinkedInvestments.Where(li => li.DateCreated <= monthEnd).Sum(li => li.Amount);
+                    available += entradas - saidas;
+                }
+                investedByMonth.Add(invested);
+                availableByMonth.Add(available);
+            }
+
+            return Json(new {
+                labels,
+                investedByMonth,
+                availableByMonth
+            });
+        }
 
         private bool ReserveExists(Guid id)
         {
