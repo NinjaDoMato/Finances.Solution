@@ -401,6 +401,19 @@ namespace Finances.APP.Controllers
             return Json(investments);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> TypesDistribution()
+        {
+            var data = await _context.Investments
+                .GroupBy(i => i.Type)
+                .Select(g => new {
+                    type = g.Key.ToString(),
+                    count = g.Count()
+                })
+                .ToListAsync();
+            return Json(data);
+        }
+
         private bool InvestmentExists(Guid id)
         {
             return (_context.Investments?.Any(e => e.Id == id)).GetValueOrDefault();
