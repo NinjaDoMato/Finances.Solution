@@ -408,7 +408,7 @@ namespace Finances.APP.Controllers
                 .GroupBy(i => i.Type)
                 .Select(g => new {
                     type = g.Key.ToString(),
-                    count = g.Count()
+                    count = g.Sum(i => i.CurrentAmount)
                 })
                 .ToListAsync();
             return Json(data);
