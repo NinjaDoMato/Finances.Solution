@@ -28,15 +28,6 @@
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
     @section Scripts {
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-        <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin-2.min.js"></script>
-
         <!-- Page level plugins -->
         <script src="vendor/chart.js/Chart.min.js"></script>
 
@@ -155,33 +146,38 @@
             }
 
             function fetchAndRenderMontinhosChart() {
-                $.ajax({
-                    url: '/Reserves/AmountByMonth',
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function (data) {
-                        chartMontinhosData = data;
-                        renderMontinhosChart(data);
-                    },
-                    error: function (xhr, status, error) {
-                        console.log(error);
-                    }
-                });
-            }
-
-            // Inicializa o gráfico
-            fetchAndRenderMontinhosChart();
-
-            // Atualiza o gráfico ao trocar o tema
-            const observer = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
-                        if (chartMontinhosData) {
-                            renderMontinhosChart(chartMontinhosData);
+                // AJAX puro sem jQuery
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/Reserves/AmountByMonth', true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            var data = JSON.parse(xhr.responseText);
+                            chartMontinhosData = data;
+                            renderMontinhosChart(data);
+                        } else {
+                            console.log('Erro ao buscar dados do gráfico:', xhr.statusText);
                         }
                     }
+                };
+                xhr.send();
+            }
+
+            // Executa apenas quando o DOM estiver pronto
+            document.addEventListener('DOMContentLoaded', function () {
+                fetchAndRenderMontinhosChart();
+
+                // Atualiza o gráfico ao trocar o tema
+                const observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                            if (chartMontinhosData) {
+                                renderMontinhosChart(chartMontinhosData);
+                            }
+                        }
+                    });
                 });
+                observer.observe(document.documentElement, { attributes: true });
             });
-            observer.observe(document.documentElement, { attributes: true });
         </script>
     }
