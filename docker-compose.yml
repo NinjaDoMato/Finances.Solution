@@ -3,8 +3,8 @@ services:
     container_name: financesapp
     image: financesapp:latest
     build:
-        context: /home/daniel/Desktop/Applications/Finances.Solution
-        dockerfile: Finances.APP/Dockerfile
+      context: /home/daniel/Desktop/Applications/Finances.Solution
+      dockerfile: Finances.APP/Dockerfile
     ports:
       - "5000:80"
     depends_on:
@@ -12,7 +12,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Server=mysql;Database=finances;User=root;Password=root;
-
   mysql:
     container_name: mysql
     image: mysql:8.0
@@ -24,6 +23,20 @@ services:
       - ./mysql-init:/docker-entrypoint-initdb.d  # Mount the directory with initialization scripts
     ports:
       - "3306:3306"
+  spoolman:
+    container_name: spoolman
+    image: ghcr.io/donkie/spoolman:latest
+    restart: unless-stopped
+    volumes:
+      # Mount the host machine's ./data directory into the container's /home/app/.local/share/spoolman directory
+      - type: bind
+        source: /home/daniel/Desktop/Spoolman # This is where the data will be stored locally. Could also be set to for example `source: /home/pi/printer_data/spoolman`.
+        target: /home/app/.local/share/spoolman # Do NOT modify this line
+    ports:
+      # Map the host machine's port 7912 to the container's port 8000
+      - "7912:8000"
+    environment:
+      - TZ=America/Sao_Paulo # Optional, defaults to UTC
 
 volumes:
   mysql_data:
@@ -32,6 +45,6 @@ volumes:
 # set trusted docker internal network
 networks:
   default:
-      ipam:  
-        config: 
+      ipam:
+        config:
          - subnet: 172.10.0.0/24
