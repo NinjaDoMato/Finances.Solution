@@ -9,9 +9,11 @@ using Finances.Database.Context;
 using Finances.Database.Entities;
 using Finances.APP.Models.Purchase;
 using Finances.Database.Migrations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Finances.APP.Controllers
 {
+    [Authorize]
     public class PurchasesController : Controller
     {
         private readonly DatabaseContext _context;

@@ -7,9 +7,11 @@ using Finances.Database.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Finances.APP.Controllers
 {
+    [Authorize]
     public class ReservesController : Controller
     {
         private readonly DatabaseContext _context;
@@ -346,6 +348,28 @@ namespace Finances.APP.Controllers
                 investedByMonth,
                 availableByMonth
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ReservesDistribution()
+        {
+            var reserves = await _context.Reserves
+                .Include(r => r.LinkedInvestments)
+                .Include(r => r.Entries)
+                .ToListAsync();
+
+            var distribution = reserves
+                .GroupBy(r => r.Owner)
+                .Select(g => new
+                {
+                    name = g.Key,
+                    amount = g.Sum(r => r.Entries.Sum(e => e.Amount)),
+                    color = g.First().DisplayColor,
+                    owner = g.First().Owner.ToString()
+                })
+                .ToList();
+
+            return Json(distribution);
         }
 
         private bool ReserveExists(Guid id)

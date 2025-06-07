@@ -59,7 +59,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Admin
+                Finanças
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -92,6 +92,17 @@
                 </div>
             </li>
 
+            <div class="sidebar-heading">
+                Configurações
+            </div>
+
+             <li class="nav-item active">
+                <a class="nav-link" href="/Account/Users">
+                    <i class="fas fa-solid fa-users"></i>
+                    <span>Usuários</span>
+                </a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
 
@@ -115,13 +126,6 @@
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
 
-                    <!-- Theme Toggle Button -->
-                    <li class="nav-item">
-                        <button id="themeToggle" class="btn btn-link nav-link">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </li>
-
                     <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                     <li class="nav-item dropdown no-arrow d-sm-none">
                         <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
@@ -134,8 +138,8 @@
                             <form class="form-inline mr-auto w-100 navbar-search">
                                 <div class="input-group">
                                     <input type="text" class="form-control bg-light border-0 small"
-                                           placeholder="Search for..." aria-label="Search"
-                                           aria-describedby="basic-addon2">
+                                           placeholder="Pesquisar por..."
+                                           aria-label="Search" aria-describedby="basic-addon2">
                                     <div class="input-group-append">
                                         <button class="btn btn-primary" type="button">
                                             <i class="fas fa-search fa-sm"></i>
@@ -144,6 +148,22 @@
                                 </div>
                             </form>
                         </div>
+                    </li>
+
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item">
+                        <button id="themeToggle" class="btn btn-link nav-link">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+
+                    <!-- Logout Button -->
+                    <li class="nav-item">
+                        <form method="post" action="@Url.Action("Logout", "Account")" class="d-inline">
+                            <button type="submit" class="btn btn-link nav-link">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </form>
                     </li>
 
                     <!-- Nav Item - Alerts -->

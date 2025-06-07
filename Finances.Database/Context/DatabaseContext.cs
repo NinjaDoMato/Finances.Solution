@@ -16,12 +16,24 @@ public class DatabaseContext : DbContext
     public virtual DbSet<Payment> CostPayments { get; set; }
     public virtual DbSet<Purchase> Purchases { get; set; }
     public virtual DbSet<Installment> PurchaseInstallments { get; set; }
+    public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new EntryConfiguration());
         modelBuilder.ApplyConfiguration(new ReserveConfiguration());
         modelBuilder.ApplyConfiguration(new ReserveInvestmentConfiguration());
+
+        // Configuração do usuário inicial
+        var initialUser = new User
+        {
+            Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Email = "daniel.deda1995@gmail.com",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("ddd599123"),
+            DateCreated = DateTime.UtcNow
+        };
+
+        modelBuilder.Entity<User>().HasData(initialUser);
     }
 
     public override int SaveChanges()

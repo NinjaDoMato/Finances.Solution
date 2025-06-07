@@ -31,6 +31,41 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Distribuição de Investimentos</h6>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <div class="row w-100">
+                        <div class="col-6">
+                            <div class="chart-pie" style="height: 350px;">
+                                <canvas id="donutInvestments" style="max-width: 100%; max-height: 350px;"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="chart-pie" style="height: 350px;">
+                                <canvas id="donutReserves" style="max-width: 100%; max-height: 350px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Custos Fixos Pendentes</h6>
+                </div>
+                <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
+                    <ul id="pending-costs-list" class="list-group list-group-flush" style="border-radius: 0.35rem;">
+                        <li class="list-group-item text-center text-secondary">Carregando...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
           rel="stylesheet">
@@ -220,6 +255,39 @@
                     });
             }
 
+            function loadPendingCosts() {
+                const list = document.getElementById('pending-costs-list');
+                list.innerHTML = '<li class="list-group-item text-center text-secondary">Carregando...</li>';
+                fetch('/Costs/PendingMonthlyCosts')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data || data.length === 0) {
+                            list.innerHTML = '<li class="list-group-item text-center text-secondary">Nenhum custo fixo pendente para este mês.</li>';
+                            return;
+                        }
+                        list.innerHTML = '';
+                        data.forEach(item => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item cost-item';
+                            li.style.cursor = 'pointer';
+                            
+                            li.innerHTML = `
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                    <div class="text-left">
+                                        <span class="font-weight-bold">${item.name}</span><br/>
+                                        <span class="text-secondary" style="font-size:0.9em;">${formatCurrency(item.amount)}</span>
+                                    </div>
+                                </div>
+                            `;
+                            li.onclick = () => window.location.href = `/Costs/Edit/${item.id}`;
+                            list.appendChild(li);
+                        });
+                    })
+                    .catch(() => {
+                        list.innerHTML = '<li class="list-group-item text-center text-danger">Erro ao carregar custos pendentes.</li>';
+                    });
+            }
+
             let donutChartInstance = null;
             function getDonutColors() {
                 const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -248,7 +316,8 @@
                                 }]
                             },
                             options: {
-                                responsive: false,
+                                responsive: true,
+                                maintainAspectRatio: false,
                                 plugins: {
                                     legend: {
                                         display: true,
@@ -257,16 +326,95 @@
                                         labels: {
                                             color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#222',
                                             padding: 20,
-                                            boxWidth: 12
+                                            boxWidth: 12,
+                                            font: {
+                                                size: 11
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.raw || 0;
+                                                return `${label}: ${formatCurrency(value)}`;
+                                            }
                                         }
                                     }
                                 },
-                                tooltips: {
-                                    backgroundColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#23272b' : '#fff',
-                                    bodyFontColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#858796',
-                                    borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#444' : '#dddfeb',
-                                    borderWidth: 1,
-                                }
+                                cutout: '70%'
+                            }
+                        });
+                    });
+            }
+
+            function getOwnerDisplayName(owner) {
+                const ownerNames = {
+                    'Daniel': 'MiMoço',
+                    'Cassia': 'MiMoça',
+                    'Common': 'Dos Doise'
+                };
+                return ownerNames[owner] || owner;
+            }
+
+            function getOwnerColor(owner) {
+                const ownerColors = {
+                    'Daniel': '#3b82f6', // Azul
+                    'Cassia': '#f43f5e', // Rosa
+                    'Common': '#10b981' // Verde
+                };
+                return ownerColors[owner] || '#858796';
+            }
+
+            let donutReservesInstance = null;
+            function loadReservesDonutChart() {
+                fetch('/Reserves/ReservesDistribution')
+                    .then(res => res.json())
+                    .then(data => {
+                        const ctx = document.getElementById('donutReserves');
+                        if (donutReservesInstance) donutReservesInstance.destroy();
+                        const labels = data.map(x => getOwnerDisplayName(x.owner));
+                        const values = data.map(x => x.amount);
+                        const colors = data.map(x => getOwnerColor(x.owner));
+                        donutReservesInstance = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: values,
+                                    backgroundColor: colors,
+                                    borderColor: 'rgba(0,0,0,0.05)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'bottom',
+                                        align: 'center',
+                                        labels: {
+                                            color: document.documentElement.getAttribute('data-theme') === 'dark' ? '#fff' : '#222',
+                                            padding: 20,
+                                            boxWidth: 12,
+                                            font: {
+                                                size: 11
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                const label = context.label || '';
+                                                const value = context.raw || 0;
+                                                return `${label}: ${formatCurrency(value)}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                cutout: '70%'
                             }
                         });
                     });
@@ -367,7 +515,9 @@
                 fetchAndRenderMontinhosChart();
                 loadUpcomingInvestments();
                 loadDonutChart();
+                loadReservesDonutChart();
                 loadCapitalAcumuladoChart();
+                loadPendingCosts();
 
                 // Atualiza o gráfico ao trocar o tema
                 const observer = new MutationObserver(function (mutations) {
@@ -378,7 +528,9 @@
                             }
                             loadUpcomingInvestments();
                             loadDonutChart();
+                            loadReservesDonutChart();
                             loadCapitalAcumuladoChart();
+                            loadPendingCosts();
                         }
                     });
                 });
@@ -386,22 +538,26 @@
             });
         </script>
         <style>
-            [data-theme="dark"] .investment-item {
+            [data-theme="dark"] .investment-item,
+            [data-theme="dark"] .cost-item {
                 background-color: #23272b !important;
                 color: #fff !important;
                 border-color: #333 !important;
             }
-            [data-theme="dark"] .investment-item .text-secondary {
+            [data-theme="dark"] .investment-item .text-secondary,
+            [data-theme="dark"] .cost-item .text-secondary {
                 color: #b8b8b8 !important;
             }
             [data-theme="dark"] .investment-item .badge-warning {
                 background-color: #f59e0b !important;
                 color: #23272b !important;
             }
-            .investment-item:hover {
+            .investment-item:hover,
+            .cost-item:hover {
                 background-color: #e3e6f0 !important;
             }
-            [data-theme="dark"] .investment-item:hover {
+            [data-theme="dark"] .investment-item:hover,
+            [data-theme="dark"] .cost-item:hover {
                 background-color: #333 !important;
             }
         </style>

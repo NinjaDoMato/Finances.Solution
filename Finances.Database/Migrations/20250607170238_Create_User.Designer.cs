@@ -3,6 +3,7 @@ using System;
 using Finances.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Finances.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250607170238_Create_User")]
+    partial class Create_User
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,11 +288,11 @@ namespace Finances.Database.Migrations
 
             modelBuilder.Entity("Finances.Database.Entities.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
@@ -297,9 +300,6 @@ namespace Finances.Database.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<DateTime?>("LastLoginAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("LastUpdate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("PasswordHash")
@@ -313,10 +313,10 @@ namespace Finances.Database.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DateCreated = new DateTime(2025, 6, 7, 17, 6, 18, 171, DateTimeKind.Utc).AddTicks(8133),
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 6, 7, 17, 2, 38, 630, DateTimeKind.Utc).AddTicks(4606),
                             Email = "daniel.deda1995@gmail.com",
-                            PasswordHash = "$2a$11$TLwzzEQZe5QeE8anY/8pzuy.MF9n7qiNdBaVmw7L3Gvl0Dio1dD0K"
+                            PasswordHash = "$2a$11$Z7wGwK.8X5ZSr27NPzMIW.FiwWKX5xQSTW4CFYb.6RsnAggVVS7jC"
                         });
                 });
 
