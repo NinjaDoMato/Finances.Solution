@@ -9,6 +9,7 @@ using Finances.Database.Context;
 using Finances.Database.Entities;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Hosting;
+using Finances.Database.Enums;
 
 namespace Finances.APP.Controllers
 {
@@ -203,6 +204,26 @@ namespace Finances.APP.Controllers
                
                 return Json(new { success = false, message = ex.Message }); // Return a success response
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PendingMonthlyCosts()
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            var pendingCosts = await _context.Costs
+                .Include(c => c.Payments)
+                .Where(c => c.Type == CostType.Month)
+                .Where(c => !c.Payments.Any(p => p.DatePaid.Month == currentMonth && p.DatePaid.Year == currentYear))
+                .Select(c => new {
+                    id = c.Id,
+                    name = c.Name,
+                    amount = c.Amount
+                })
+                .ToListAsync();
+
+            return Json(pendingCosts);
         }
 
         private bool CostExists(Guid id)
