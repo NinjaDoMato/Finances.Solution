@@ -26,6 +26,12 @@ public class Cost : BaseEntity
     [Range(0, 100)]
     public decimal CassiaPercentage { get; set; }
 
+    [DisplayName("Id Reserva")]
+    public Guid? ReserveId { get; set; }
+
+    [DisplayName("Reserva")]
+    public Reserve? Reserve { get; set; }
+
     [DisplayName("Pagamentos")]
     public IList<Payment> Payments { get; set; } = new List<Payment>();
 }

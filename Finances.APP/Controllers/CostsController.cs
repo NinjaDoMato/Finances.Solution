@@ -28,7 +28,7 @@ namespace Finances.APP.Controllers
         public async Task<IActionResult> Index()
         {
             return _context.Costs != null ?
-                        View(await _context.Costs.ToListAsync()) :
+                        View(await _context.Costs.Include(c => c.Reserve).ToListAsync()) :
                         Problem("Entity set 'DatabaseContext.Costs'  is null.");
         }
 
@@ -41,6 +41,7 @@ namespace Finances.APP.Controllers
             }
 
             var cost = await _context.Costs
+                .Include(c => c.Reserve)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cost == null)
             {
@@ -51,8 +52,15 @@ namespace Finances.APP.Controllers
         }
 
         // GET: Costs/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Reserves = await _context.Reserves
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.Name} - {r.Owner}"
+                })
+                .ToListAsync();
             return View();
         }
 
@@ -61,7 +69,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Amount,Type,Name,Description,Id,DanielPercentage,CassiaPercentage,DateCreated,LastUpdate")] Cost cost)
+        public async Task<IActionResult> Create([Bind("Amount,Type,Name,Description,Id,DanielPercentage,CassiaPercentage,DateCreated,LastUpdate,ReserveId")] Cost cost)
         {
             if (ModelState.IsValid)
             {
@@ -73,6 +81,13 @@ namespace Finances.APP.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Reserves = await _context.Reserves
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.Name} - {r.Owner}"
+                })
+                .ToListAsync();
             return View(cost);
         }
 
@@ -89,6 +104,14 @@ namespace Finances.APP.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.Reserves = await _context.Reserves
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.Name} - {r.Owner}"
+                })
+                .ToListAsync();
             return View(cost);
         }
 
@@ -97,7 +120,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Amount,Type,Name,Description,Id,DanielPercentage,CassiaPercentage,DateCreated,LastUpdate")] Cost cost)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Amount,Type,Name,Description,Id,DanielPercentage,CassiaPercentage,DateCreated,LastUpdate,ReserveId")] Cost cost)
         {
             if (id != cost.Id)
             {
@@ -127,6 +150,13 @@ namespace Finances.APP.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Reserves = await _context.Reserves
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id.ToString(),
+                    Text = $"{r.Name} - {r.Owner}"
+                })
+                .ToListAsync();
             return View(cost);
         }
 
@@ -139,6 +169,7 @@ namespace Finances.APP.Controllers
             }
 
             var cost = await _context.Costs
+                .Include(c => c.Reserve)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (cost == null)
             {
@@ -226,6 +257,54 @@ namespace Finances.APP.Controllers
                 .ToListAsync();
 
             return Json(pendingCosts);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Payment(Guid id, decimal paidAmount, DateTime paidDate)
+        {
+            var cost = await _context.Costs.Include(c => c.Payments).FirstOrDefaultAsync(c => c.Id == id);
+            if (cost == null)
+            {
+                return NotFound();
+            }
+
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid(),
+                CostId = id,
+                PaidAmount = paidAmount,
+                DatePaid = paidDate,
+                DateCreated = DateTime.Now,
+                LastUpdate = DateTime.Now
+            };
+
+            cost.Payments.Add(payment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit), new { id = id });
+        }
+
+        [HttpDelete]
+        [Route("Costs/DeletePayment/{paymentId}")]
+        public async Task<IActionResult> DeletePayment(Guid paymentId)
+        {
+            try 
+            {
+                var payment = _context.CostPayments.FirstOrDefault(p => p.Id == paymentId);
+                if (payment == null)
+                {
+                    return NotFound();
+                }
+
+                _context.CostPayments.Remove(payment);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private bool CostExists(Guid id)
