@@ -21,7 +21,7 @@
                 "pipeCwd": "${workspaceFolder}",
                 "pipeProgram": "powershell",
                 "pipeArgs": ["-Command"],
-                "debuggerPath": "C:\\Users\\segfy\\scoop\\apps\\netcoredbg\\3.1.2-1054\\netcoredbg.exe"
+                "debuggerPath": "C:\\Users\\DanielDeda\\scoop\\apps\\netcoredbg\\current\\netcoredbg.exe"
             }
         }
     ]

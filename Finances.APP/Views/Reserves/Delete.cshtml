@@ -1,14 +1,14 @@
 ﻿@model Finances.Database.Entities.Reserve
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Excluir Reserva";
 }
 
-<h1>Delete</h1>
+<h1>Excluir Reserva</h1>
 
-<h3>Tem certeza que deseja remover este item?</h3>
+<h3>Tem certeza que deseja remover esta reserva?</h3>
 <div>
-    <h4>Reserve</h4>
+    <h4>Detalhes</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -45,7 +45,7 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        <input type="submit" value="Excluir" class="btn btn-danger" />
     </form>
 </div>

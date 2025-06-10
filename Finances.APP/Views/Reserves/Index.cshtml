@@ -225,13 +225,13 @@
                             <tr>
                                 <td>@Html.DisplayFor(modelItem => item.Name)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Owner)</td>
-                                <td>@Html.DisplayFor(modelItem => item.CurrentAmount)</td>
-                                <td>@Html.DisplayFor(modelItem => item.InvestedAmount)</td>
-                                <td>@((item.CurrentAmount - item.InvestedAmount).ToString("C"))</td>
-                                <td>@Html.DisplayFor(modelItem => item.Goal)</td>
+                                <td>@item.CurrentAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                <td>@item.InvestedAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                <td>@((item.CurrentAmount - item.InvestedAmount).ToString("C", new System.Globalization.CultureInfo("pt-BR")))</td>
+                                <td>@item.Goal.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id"><i title="Ver Detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Deletar" class="fas fa-trash text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm" title="Ver Detalhes"><i class="fas fa-eye"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Deletar"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                         }

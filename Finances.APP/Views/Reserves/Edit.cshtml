@@ -104,7 +104,7 @@
                                     {
                                         <tr>
                                             <td data-order="@(item.DateCreated.Ticks)">@(item.DateCreated.ToString("dd/MM/yyyy"))</td>
-                                            <td>@(item.Amount.ToString("C"))</td>
+                                            <td>@item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
                                             <td>@Html.DisplayFor(modelItem => item.Observation)</td>
                                             <td>
                                                 <a><i title="Deletar" class="fas fa-trash text-gray-500 ml-1" onclick="RemoveEntry('@item.Id')"></i></a>
@@ -140,7 +140,7 @@
                                     {
                                         <tr>
                                             <td>@Html.DisplayFor(modelItem => item.Investment.Name)</td>
-                                            <td>@(item.Amount.ToString("C"))</td>
+                                            <td>@item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
                                             <td>
                                                 <a href="/Investments/Edit/@item.InvestmentId"><i title="Ver detalhes" class="fas fa-eye text-gray-500 ml-1"></i></a>
                                             </td>

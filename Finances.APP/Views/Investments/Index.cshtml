@@ -95,15 +95,15 @@
                             <tr>
                                 <th>@Html.DisplayFor(modelItem => item.Name)</th>
                                 <th>@Html.DisplayFor(modelItem => item.Account)</th>
-                                <th>@Html.DisplayFor(modelItem => item.StartAmount)</th>
-                                <th>@Html.DisplayFor(modelItem => item.CurrentAmount)</th>
+                                <th>@item.StartAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
+                                <th>@item.CurrentAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
                                 <th>@Html.DisplayFor(modelItem => item.Rentability)</th>
                                 <th data-order="@(item.DateCreated.Ticks)">@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
                                 <th data-order="@(item.EndDate.Ticks)">@(item.EndDate.ToString("dd/MM/yyyy"))</th>
 
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id"><i title="Editar" class="fas fa-pen text-gray-500 ml-1"></i></a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id"><i title="Liquidar" class="fas fa-hand-holding-usd text-gray-500 ml-1"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm" title="Editar"><i class="fas fa-pen"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Liquidar"><i class="fas fa-hand-holding-usd"></i></a>
                                 </td>
                             </tr>
                         }
