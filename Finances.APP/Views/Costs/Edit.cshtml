@@ -170,8 +170,12 @@
                             // Reload the page after adding the payment
                             location.reload();
                         },
-                        error: function () {
-                            // Handle the error if needed
+                        error: function (xhr, status, error) {
+                            if (xhr.status === 400) {
+                                toastr.error(xhr.responseText);
+                            } else {
+                                toastr.error('Erro ao realizar o pagamento. Tente novamente.');
+                            }
                         }
                     });
                 }

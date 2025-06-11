@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Hosting;
 using Finances.Database.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Finances.Database;
 
 namespace Finances.APP.Controllers
 {
@@ -203,40 +204,89 @@ namespace Finances.APP.Controllers
 
         [HttpPost]
         [Route("Costs/{id}/Payment")]
-        public async Task<IActionResult> AddPayment(Guid id, decimal paidAmount, DateTime paidDate)
+        public async Task<IActionResult> Payment(Guid id, decimal paidAmount, DateTime paidDate)
         {
-            try
+            var cost = await _context.Costs
+                .Include(c => c.Payments)
+                .Include(c => c.Reserve)
+                    .ThenInclude(r => r.Entries)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cost == null)
             {
-                var cost = _context.Costs.Include(c => c.Payments).FirstOrDefault(m => m.Id == id);
+                return NotFound();
+            }
 
-                if (cost == null)
-                    throw new Exception("Custo fixo não foi encontrado");
+            var payment = new Payment
+            {
+                PaidAmount = paidAmount,
+                DatePaid = paidDate,
+                DateCreated = DateTime.Now,
+                LastUpdate = DateTime.Now
+            };
 
-                if (paidAmount <= 0)
-                    throw new Exception("O valor pago deve ser maior do que zero.");
+            cost.Payments.Add(payment);
 
-                if (paidDate.Date > DateTime.Now)
-                    throw new Exception("Não é poss~ivel realizar pagamentos em uma data futura.");
+            // Se o custo tem uma reserva vinculada, adiciona um lançamento negativo
+            if (cost.Reserve != null)
+            {
+                // Verifica se a reserva tem saldo suficiente
+                var reserveBalance = cost.Reserve.Entries.Sum(e => e.Amount);
 
-                cost.Payments.Add(new Payment()
+                if (reserveBalance < paidAmount)
                 {
-                    CostId = id,
-                    DatePaid = paidDate,
-                    PaidAmount = paidAmount
-                });
+                    return BadRequest("Saldo insuficiente na reserva para realizar o pagamento.");
+                }
 
-                await _context.SaveChangesAsync();
+                var entry = new Entry
+                {
+                    Amount = -paidAmount, // Valor negativo
+                    Observation = $"Pagamento - {cost.Name}",
+                    DateCreated = DateTime.Now,
+                    LastUpdate = DateTime.Now
+                };
 
-                TempData["success"] = "Pagamento registrado com sucesso.";
-
-                return Json(new { success = true }); // Return a success response
+                cost.Reserve.Entries.Add(entry);
             }
-            catch (Exception ex)
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit), new { id = id });
+        }
+
+        [HttpDelete]
+        [Route("Costs/DeletePayment/{paymentId}")]
+        public async Task<IActionResult> DeletePayment(Guid paymentId)
+        {
+            var payment = await _context.CostPayments
+                .Include(p => p.Cost)
+                    .ThenInclude(c => c.Reserve)
+                        .ThenInclude(r => r.Entries)
+                .FirstOrDefaultAsync(p => p.Id == paymentId);
+
+            if (payment == null)
             {
-                TempData["error"] = ex.Message;
-               
-                return Json(new { success = false, message = ex.Message }); // Return a success response
+                return NotFound();
             }
+
+            // Se o custo tem uma reserva vinculada, adiciona um lançamento positivo
+            if (payment.Cost.Reserve != null)
+            {
+                var entry = new Entry
+                {
+                    Amount = payment.PaidAmount, // Valor positivo
+                    Observation = $"Estorno pagamento - {payment.Cost.Name}",
+                    DateCreated = DateTime.Now,
+                    LastUpdate = DateTime.Now
+                };
+
+                payment.Cost.Reserve.Entries.Add(entry);
+            }
+
+            _context.CostPayments.Remove(payment);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [HttpGet]
@@ -257,54 +307,6 @@ namespace Finances.APP.Controllers
                 .ToListAsync();
 
             return Json(pendingCosts);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Payment(Guid id, decimal paidAmount, DateTime paidDate)
-        {
-            var cost = await _context.Costs.Include(c => c.Payments).FirstOrDefaultAsync(c => c.Id == id);
-            if (cost == null)
-            {
-                return NotFound();
-            }
-
-            var payment = new Payment
-            {
-                Id = Guid.NewGuid(),
-                CostId = id,
-                PaidAmount = paidAmount,
-                DatePaid = paidDate,
-                DateCreated = DateTime.Now,
-                LastUpdate = DateTime.Now
-            };
-
-            cost.Payments.Add(payment);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Edit), new { id = id });
-        }
-
-        [HttpDelete]
-        [Route("Costs/DeletePayment/{paymentId}")]
-        public async Task<IActionResult> DeletePayment(Guid paymentId)
-        {
-            try 
-            {
-                var payment = _context.CostPayments.FirstOrDefault(p => p.Id == paymentId);
-                if (payment == null)
-                {
-                    return NotFound();
-                }
-
-                _context.CostPayments.Remove(payment);
-                await _context.SaveChangesAsync();
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         private bool CostExists(Guid id)

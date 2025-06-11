@@ -26,7 +26,7 @@ public class Cost : BaseEntity
     [Range(0, 100)]
     public decimal CassiaPercentage { get; set; }
 
-    [DisplayName("Id Reserva")]
+    [DisplayName("Reserva")]
     public Guid? ReserveId { get; set; }
 
     [DisplayName("Reserva")]
