@@ -124,6 +124,13 @@ namespace Finances.APP.Controllers
             {
                 return NotFound();
             }
+
+            // Carrega outras reservas para o dropdown de transferência
+            ViewBag.OtherReserves = await _context.Reserves
+                .Where(r => r.Id != id)
+                .OrderBy(r => r.Name)
+                .ToListAsync();
+
             return View(reserve);
         }
 
@@ -274,7 +281,7 @@ namespace Finances.APP.Controllers
 
         // POST: Reserves/RemoveEntry/
         [HttpPost]
-        public async Task<IActionResult> AddEntry(Guid reserveId, decimal amount)
+        public async Task<IActionResult> AddEntry(Guid reserveId, decimal amount, string? observation)
         {
             var reserve = await _context.Reserves
                 .Include(r => r.Entries)
@@ -285,6 +292,7 @@ namespace Finances.APP.Controllers
                 reserve.Entries.Add(new Entry()
                 {
                     Amount = amount,
+                    Observation = observation ?? string.Empty
                 });
 
                 await _context.SaveChangesAsync();
@@ -370,6 +378,58 @@ namespace Finances.APP.Controllers
                 .ToList();
 
             return Json(distribution);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TransferAmount(Guid sourceReserveId, Guid targetReserveId, decimal amount)
+        {
+            try
+            {
+                var sourceReserve = await _context.Reserves
+                    .Include(r => r.Entries)
+                    .Include(r => r.LinkedInvestments)
+                    .FirstOrDefaultAsync(r => r.Id == sourceReserveId);
+
+                var targetReserve = await _context.Reserves
+                    .Include(r => r.Entries)
+                    .FirstOrDefaultAsync(r => r.Id == targetReserveId);
+
+                if (sourceReserve == null || targetReserve == null)
+                {
+                    return Json(new { success = false, message = "Reserva não encontrada." });
+                }
+
+                var available = sourceReserve.Entries.Sum(r => r.Amount) - sourceReserve.LinkedInvestments.Sum(r => r.Amount);
+
+                if (available < amount)
+                {
+                    return Json(new { success = false, message = "Saldo disponível insuficiente." });
+                }
+
+                // Adiciona lançamento negativo na reserva origem
+                sourceReserve.Entries.Add(new Entry()
+                {
+                    Amount = -amount,
+                    Observation = $"Transferência para reserva {targetReserve.Name}",
+                });
+
+                // Adiciona lançamento positivo na reserva destino
+                targetReserve.Entries.Add(new Entry()
+                {
+                    Amount = amount,
+                    Observation = $"Transferência da reserva {sourceReserve.Name}",
+                });
+
+                await _context.SaveChangesAsync();
+
+                TempData["success"] = "Transferência realizada com sucesso.";
+                return Json(new { success = true, message = "Transferência realizada com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = "Erro ao realizar transferência.";
+                return Json(new { success = false, message = "Erro ao realizar transferência." });
+            }
         }
 
         private bool ReserveExists(Guid id)

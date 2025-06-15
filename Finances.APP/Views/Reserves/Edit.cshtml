@@ -86,6 +86,9 @@
                                 <div class="col-md-5">
                                     <input class="form-control" id="inNewEntry" type="number" />
                                 </div>
+                                <div class="col-md-5 ml-2">
+                                    <input class="form-control" id="inNewEntryObs" type="text" placeholder="Observação" maxlength="100" />
+                                </div>
                                 <button class="btn btn-primary ml-2" id="btnAddNewEntry">Adicionar</button>
                             </div>
                         </div>
@@ -113,6 +116,43 @@
                                     }
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-flex">
+            <div class="row table-content">
+                <div class="card shadow mb-4" style="max-height: 600px; overflow: auto">
+                    <div class="card-body">
+                        <div>
+                            <h4 class="font-weight-bold text-primary mb-3">Transferência entre Reservas</h4>
+                            <div class="form-row align-items-end">
+                                <div class="form-group mb-2 mr-2" style="display: flex; align-items: flex-end;">
+                                    <button type="button" class="btn btn-outline-secondary mr-2" id="btnFillAllBalance" data-toggle="tooltip" title="Transferir todo saldo">
+                                        <i class="fas fa-wallet"></i>
+                                    </button>
+                                    <div style="flex:1;">
+                                        <label for="inTransferAmount" class="control-label">Valor</label>
+                                        <input class="form-control" id="inTransferAmount" type="number" min="0" step="0.01" placeholder="Valor" />
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ml-2">
+                                    <label for="targetReserve" class="control-label">Reserva destino</label>
+                                    <select class="form-control" id="targetReserve">
+                                        <option value="">Selecione a reserva destino</option>
+                                        @foreach (var reserve in ViewBag.OtherReserves)
+                                        {
+                                            <option value="@reserve.Id">@reserve.Name - @reserve.Owner</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group mb-2 ml-2">
+                                    <label class="d-block" style="visibility:hidden">Transferir</label>
+                                    <button class="btn btn-primary w-100" id="btnTransfer">Transferir</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -191,6 +231,7 @@
 
             $('#btnAddNewEntry').on('click', function () {
                 var value = $('#inNewEntry').val();
+                var observation = $('#inNewEntryObs').val();
                 var reserveId = "@Model.Id.ToString()";
 
                 if (value && value != 0) {
@@ -200,6 +241,7 @@
                         data: {
                             Amount: value,
                             ReserveId: reserveId.toString(),
+                            Observation: observation
                         },
                         beforeSend: function () {
                             return confirm("Tem certeza que deseja adicionar um novo lançamento?");
@@ -212,7 +254,54 @@
                         }
                     });
                 }
-            })
+            });
+
+            // Impede valores negativos no input
+            $('#inTransferAmount').on('input', function () {
+                if (parseFloat(this.value) < 0) {
+                    this.value = 0;
+                }
+            });
+
+            $('#btnTransfer').on('click', function () {
+                var amount = parseFloat($('#inTransferAmount').val());
+                var targetReserveId = $('#targetReserve').val();
+                var sourceReserveId = "@Model.Id.ToString()";
+
+                if (!amount || amount <= 0 || !targetReserveId) {
+                    alert('Informe um valor positivo e selecione a reserva destino.');
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Reserves/TransferAmount/",
+                    method: "POST",
+                    data: {
+                        amount: amount,
+                        sourceReserveId: sourceReserveId,
+                        targetReserveId: targetReserveId
+                    },
+                    beforeSend: function () {
+                        return confirm("Tem certeza que deseja realizar esta transferência?");
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.reload(true);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Erro ao realizar transferência.");
+                    }
+                });
+            });
+
+            $("#btnFillAllBalance").tooltip();
+            $('#btnFillAllBalance').on('click', function () {
+                var saldo = @((Model.Entries.Sum(e => e.Amount) - Model.LinkedInvestments.Sum(i => i.Amount)).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                $('#inTransferAmount').val(saldo);
+            });
         });
     </script>
     @{
