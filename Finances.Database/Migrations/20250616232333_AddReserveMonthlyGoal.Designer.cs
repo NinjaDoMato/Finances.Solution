@@ -3,6 +3,7 @@ using System;
 using Finances.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Finances.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250616232333_AddReserveMonthlyGoal")]
+    partial class AddReserveMonthlyGoal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,7 +252,7 @@ namespace Finances.Database.Migrations
                     b.Property<DateTime?>("LastUpdate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<decimal?>("MonthlyGoal")
+                    b.Property<decimal?>("MetaMensal")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("Name")
@@ -322,9 +325,9 @@ namespace Finances.Database.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DateCreated = new DateTime(2025, 6, 16, 23, 25, 27, 388, DateTimeKind.Utc).AddTicks(8656),
+                            DateCreated = new DateTime(2025, 6, 16, 23, 23, 33, 608, DateTimeKind.Utc).AddTicks(229),
                             Email = "daniel.deda1995@gmail.com",
-                            PasswordHash = "$2a$11$czfARIatZ5G5.et1KVFunuKJh0DukeE3alxNNT.tqpKaGqOMrscii"
+                            PasswordHash = "$2a$11$xVKcal5tAqQpPuAcAOIxF.BovdlUKYkC.5A3k6e6tLV/rtkAdr/Fq"
                         });
                 });
 

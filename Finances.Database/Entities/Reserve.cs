@@ -23,6 +23,9 @@ public class Reserve : BaseEntity
     [DisplayName("Cor de Fundo")]
     public string DisplayColor { get; set; } = string.Empty;
 
+    [DisplayName("Meta Mensal")]
+    public decimal? MonthlyGoal { get; set; } = 0;
+
     public IList<Entry> Entries { get; set; } = new List<Entry>();
     public IList<ReserveInvestment> LinkedInvestments { get; set; } = new List<ReserveInvestment>();
 }

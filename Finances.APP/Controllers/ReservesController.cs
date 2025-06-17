@@ -91,7 +91,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Owner,Goal,Id,DateCreated,LastUpdate")] Reserve reserve)
+        public async Task<IActionResult> Create([Bind("Name,Description,Owner,Goal,MonthlyGoal,Id,DateCreated,LastUpdate")] Reserve reserve)
         {
             if (ModelState.IsValid)
             {
@@ -184,7 +184,7 @@ namespace Finances.APP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Owner,DisplayColor,Id,DateCreated,LastUpdate,Goal")] Reserve reserve)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Owner,DisplayColor,Id,DateCreated,LastUpdate,Goal,MonthlyGoal")] Reserve reserve)
         {
             if (id != reserve.Id)
             {
