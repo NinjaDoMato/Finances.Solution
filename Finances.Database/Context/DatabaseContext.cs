@@ -17,12 +17,14 @@ public class DatabaseContext : DbContext
     public virtual DbSet<Purchase> Purchases { get; set; }
     public virtual DbSet<Installment> PurchaseInstallments { get; set; }
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<IncomeSource> IncomeSources { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new EntryConfiguration());
         modelBuilder.ApplyConfiguration(new ReserveConfiguration());
         modelBuilder.ApplyConfiguration(new ReserveInvestmentConfiguration());
+        modelBuilder.ApplyConfiguration(new IncomeSourceConfiguration());
 
         // Configuração do usuário inicial
         var initialUser = new User
