@@ -1,7 +1,90 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    var totals = ViewBag.DashboardTotals as Finances.APP.Models.DashboardTotalsViewModel;
+    string saldoBorderClass = "border-left-secondary";
+    string saldoTextClass = "text-secondary";
+    if (totals != null)
+    {
+        if (totals.SaldoDisponivel < 0)
+        {
+            saldoBorderClass = "border-left-danger";
+            saldoTextClass = "text-danger";
+        }
+        else if (totals.SaldoDisponivel > 500)
+        {
+            saldoBorderClass = "border-left-success";
+            saldoTextClass = "text-success";
+        }
+        else if (totals.SaldoDisponivel > 0)
+        {
+            saldoBorderClass = "border-left-warning";
+            saldoTextClass = "text-warning";
+        }
+    }
 }
 
+<div class="row container-fluid mb-4 gx-3 gy-3">
+    <div class="col">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Acumulado</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((totals?.TotalAcumulado ?? 0).ToString("C"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total de Entradas</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((totals?.TotalEntradas ?? 0).ToString("C"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total de Custos Fixos</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((totals?.TotalCustosFixos ?? 0).ToString("C"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Meta de Investimento</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@((totals?.MetaInvestimento ?? 0).ToString("C"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card @saldoBorderClass shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1 @saldoTextClass">Saldo Mensal</div>
+                        <div class="h5 mb-0 font-weight-bold @saldoTextClass">@((totals?.SaldoDisponivel ?? 0).ToString("C"))</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="text-center">
     <!-- Area Chart -->
