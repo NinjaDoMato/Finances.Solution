@@ -7,6 +7,16 @@
 			"group": "build",
 			"problemMatcher": [],
 			"label": "dotnet: build"
+		},
+		{
+			"type": "dotnet",
+			"task": "watch",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "dotnet: watch",
+			"options": {
+				"cwd": "${workspaceFolder}/Finances.APP"
+			}
 		}
 	]
 }

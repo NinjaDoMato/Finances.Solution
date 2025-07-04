@@ -119,7 +119,7 @@
                         {
                             <tr>
                                 <th>@Html.DisplayFor(modelItem => item.Name)</th>
-                                <th>@item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
+                                <th data-order="@item.Amount">@item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
                                 <th>@Html.DisplayFor(modelItem => item.Type)</th>
                                 <th>@(item.Reserve != null ? $"{item.Reserve.Name} - {item.Reserve.Owner}" : "Nenhuma reserva vinculada")</th>
                                 <td>
@@ -142,7 +142,17 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#dataTable').DataTable();
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Portuguese-Brasil.json"
+                },
+                "columnDefs": [
+                    {
+                        "targets": [1], // Coluna Amount (valor)
+                        "type": "num"
+                    }
+                ]
+            });
         });
     </script>
 }

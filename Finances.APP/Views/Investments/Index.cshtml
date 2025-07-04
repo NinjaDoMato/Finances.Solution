@@ -95,8 +95,8 @@
                             <tr>
                                 <th>@Html.DisplayFor(modelItem => item.Name)</th>
                                 <th>@Html.DisplayFor(modelItem => item.Account)</th>
-                                <th>@item.StartAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
-                                <th>@item.CurrentAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
+                                <th data-order="@item.StartAmount">@item.StartAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
+                                <th data-order="@item.CurrentAmount">@item.CurrentAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</th>
                                 <th>@Html.DisplayFor(modelItem => item.Rentability)</th>
                                 <th data-order="@(item.DateCreated.Ticks)">@(item.DateCreated.ToString("dd/MM/yyyy"))</th>
                                 <th data-order="@(item.EndDate.Ticks)">@(item.EndDate.ToString("dd/MM/yyyy"))</th>
@@ -120,7 +120,17 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#dataTable').DataTable();
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Portuguese-Brasil.json"
+                },
+                "columnDefs": [
+                    {
+                        "targets": [2, 3], // Colunas: StartAmount, CurrentAmount
+                        "type": "num"
+                    }
+                ]
+            });
         });
     </script>
 }

@@ -225,10 +225,10 @@
                             <tr>
                                 <td>@Html.DisplayFor(modelItem => item.Name)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Owner)</td>
-                                <td>@item.CurrentAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
-                                <td>@item.InvestedAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
-                                <td>@((item.CurrentAmount - item.InvestedAmount).ToString("C", new System.Globalization.CultureInfo("pt-BR")))</td>
-                                <td>@item.Goal.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                <td data-order="@item.CurrentAmount">@item.CurrentAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                <td data-order="@item.InvestedAmount">@item.InvestedAmount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                <td data-order="@(item.CurrentAmount - item.InvestedAmount)">@((item.CurrentAmount - item.InvestedAmount).ToString("C", new System.Globalization.CultureInfo("pt-BR")))</td>
+                                <td data-order="@item.Goal">@item.Goal.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm" title="Ver Detalhes"><i class="fas fa-eye"></i></a>
                                     <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Deletar"><i class="fas fa-trash"></i></a>
@@ -248,7 +248,17 @@
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#dataTable').DataTable();
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Portuguese-Brasil.json"
+                },
+                "columnDefs": [
+                    {
+                        "targets": [2, 3, 4, 5], // Colunas: CurrentAmount, InvestedAmount, Saldo, Goal
+                        "type": "num"
+                    }
+                ]
+            });
         });
     </script>
 }

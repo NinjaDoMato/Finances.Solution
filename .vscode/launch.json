@@ -23,6 +23,29 @@
                 "pipeArgs": ["-Command"],
                 "debuggerPath": "C:\\Users\\DanielDeda\\scoop\\apps\\netcoredbg\\current\\netcoredbg.exe"
             }
+        },
+        {
+            "name": ".NET Core Launch (web) - Hot Reload",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "dotnet",
+            "args": ["watch", "run"],
+            "cwd": "${workspaceFolder}/Finances.APP",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "powershell",
+                "pipeArgs": ["-Command"],
+                "debuggerPath": "C:\\Users\\DanielDeda\\scoop\\apps\\netcoredbg\\current\\netcoredbg.exe"
+            }
         }
     ]
 }
